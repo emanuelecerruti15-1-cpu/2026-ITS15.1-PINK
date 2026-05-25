@@ -7,3 +7,6 @@ Please
 io voglio salsa bbc 
 pizza kebab
 Se proprio vuoi anche un tacos L :)
+
+
+mi duole dirlo ma i tacos non mi sono piacuti sono migliori quelli di mia nonna
