@@ -2,4 +2,5 @@ NO! ZITTO!
 Ragazzi, non costano cosi tanto i taco
 o il cinese
 siete solo dei poveracci....
-Cerru comprami un tacos XL
+Cerru comprami un tacos XL...
+Please
