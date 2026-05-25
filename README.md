@@ -12,3 +12,6 @@ Se proprio vuoi anche un tacos L :)
 mi duole dirlo ma i tacos non mi sono piacuti sono migliori quelli di mia nonna
 
 pulled pork???
+
+anacardi o arachidi al miele???
+
