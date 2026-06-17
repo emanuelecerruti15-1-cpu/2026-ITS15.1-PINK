@@ -1,0 +1,328 @@
+================================================================================
+  RistoManager — ROADMAP LOGICA ORDINI (per principianti Java)
+================================================================================
+
+A chi serve: a capire come funzionano gli ordini — il cuore del gestionale.
+
+Pagina frontend: dashboard/ordini.html (gia pronta)
+File Java: OrdineController.java, OrdineService.java
+
+Regola d'oro: un ordine passa solo per 3 stati:
+              APERTO  →  IN_CUCINA  →  PAGATO
+              Niente altri stati per ora.
+
+
+================================================================================
+  PARTE 0 — COSA FA QUESTA SEZIONE
+================================================================================
+
+Gli ordini servono a:
+  - Registrare cosa ha ordinato un tavolo
+  - Aggiungere piatti dal menu
+  - Mandare in cucina
+  - Pagare e chiudere il conto (tavolo torna libero)
+
+Un tavolo puo avere UN SOLO ordine attivo alla volta
+(ordine attivo = stato APERTO oppure IN_CUCINA).
+
+
+================================================================================
+  PARTE 1 — TABELLE USATE
+================================================================================
+
+--- ordine ---
+  id, tavolo_id, stato, totale, creato_il, pagato_il
+
+--- riga_ordine ---
+  id, ordine_id, piatto_id, quantita, prezzo_unitario
+
+--- piatto --- (solo lettura quando aggiungi righe)
+  id, nome, prezzo, disponibile
+
+Relazione semplice:
+  1 Ordine  →  molte RigaOrdine  →  ogni riga punta a 1 Piatto
+
+
+================================================================================
+  PARTE 2 — I 3 STATI DELL'ORDINE
+================================================================================
+
+  APERTO     → ordine appena creato, si aggiungono piatti
+  IN_CUCINA  → piatti mandati in cucina, in attesa di pagamento
+  PAGATO     → conto chiuso, ordine finito (non piu "attivo")
+
+Transizioni permesse (solo queste!):
+  APERTO     → IN_CUCINA   (pulsante "Invia in cucina")
+  IN_CUCINA  → PAGATO      (pulsante "Paga conto")
+
+NON puoi:
+  - Pagare un ordine ancora APERTO (prima mandalo in cucina)
+  - Aggiungere piatti a ordine IN_CUCINA (solo se APERTO)
+  - Riaprire ordine PAGATO
+
+
+================================================================================
+  PARTE 3 — METODI PRINCIPALI (logica semplice)
+================================================================================
+
+--- METODO 1: creaOrdine(tavoloId) ---
+Cosa fa: apre nuovo ordine su tavolo libero.
+
+Passi:
+  1. Trova il tavolo
+  2. Se tavolo.non_disponibile → ERRORE "Tavolo non disponibile"
+  3. Se esiste gia ordine APERTO/IN_CUCINA su quel tavolo → ERRORE
+  4. Crea nuovo Ordine:
+       - tavolo_id = tavoloId
+       - stato = "APERTO"
+       - totale = 0
+       - creato_il = adesso
+       - pagato_il = null
+  5. Salva e restituisci
+
+In Java:
+  public Ordine creaOrdine(Long tavoloId) {
+      Tavolo t = tavoloRepository.findById(tavoloId)
+          .orElseThrow(() -> new RuntimeException("Tavolo non trovato"));
+      if (t.isNonDisponibile()) {
+          throw new RuntimeException("Tavolo non disponibile");
+      }
+      Ordine esistente = ordineRepository.findByTavoloIdAndStatoIn(
+          tavoloId, List.of("APERTO", "IN_CUCINA"));
+      if (esistente != null) {
+          throw new RuntimeException("Tavolo gia occupato");
+      }
+      Ordine o = new Ordine();
+      o.setTavoloId(tavoloId);
+      o.setStato("APERTO");
+      o.setTotale(0.0);
+      o.setCreatoIl(LocalDateTime.now());
+      return ordineRepository.save(o);
+  }
+
+
+--- METODO 2: aggiungiRiga(ordineId, piattoId, quantita) ---
+Cosa fa: aggiunge un piatto all'ordine.
+
+Passi:
+  1. Trova ordine — deve essere APERTO
+  2. Trova piatto — deve essere disponibile = true
+  3. Crea RigaOrdine con prezzo_unitario = piatto.prezzo (copia il prezzo!)
+  4. Salva riga
+  5. Ricalcola totale ordine (chiama metodo sotto)
+  6. Restituisci ordine aggiornato
+
+In Java:
+  public Ordine aggiungiRiga(Long ordineId, Long piattoId, int quantita) {
+      Ordine o = ordineRepository.findById(ordineId)
+          .orElseThrow(() -> new RuntimeException("Ordine non trovato"));
+      if (!"APERTO".equals(o.getStato())) {
+          throw new RuntimeException("Ordine non piu modificabile");
+      }
+      Piatto p = piattoRepository.findById(piattoId)
+          .orElseThrow(() -> new RuntimeException("Piatto non trovato"));
+      if (!p.isDisponibile()) {
+          throw new RuntimeException("Piatto non disponibile");
+      }
+      RigaOrdine r = new RigaOrdine();
+      r.setOrdineId(ordineId);
+      r.setPiattoId(piattoId);
+      r.setQuantita(quantita);
+      r.setPrezzoUnitario(p.getPrezzo());
+      rigaOrdineRepository.save(r);
+      ricalcolaTotale(ordineId);
+      return ordineRepository.findById(ordineId).get();
+  }
+
+
+--- METODO 3: ricalcolaTotale(ordineId) ---
+Cosa fa: somma tutte le righe e aggiorna ordine.totale.
+
+In Java:
+  public void ricalcolaTotale(Long ordineId) {
+      List<RigaOrdine> righe = rigaOrdineRepository.findByOrdineId(ordineId);
+      double totale = 0;
+      for (RigaOrdine r : righe) {
+          totale = totale + (r.getQuantita() * r.getPrezzoUnitario());
+      }
+      Ordine o = ordineRepository.findById(ordineId).get();
+      o.setTotale(totale);
+      ordineRepository.save(o);
+  }
+
+
+--- METODO 4: inviaInCucina(ordineId) ---
+Cosa fa: APERTO → IN_CUCINA
+
+Passi:
+  1. Trova ordine
+  2. Se stato != APERTO → ERRORE
+  3. Se totale == 0 → ERRORE "Aggiungi almeno un piatto"
+  4. ordine.stato = "IN_CUCINA"
+  5. Salva
+
+In Java:
+  public Ordine inviaInCucina(Long ordineId) {
+      Ordine o = ordineRepository.findById(ordineId)
+          .orElseThrow(() -> new RuntimeException("Ordine non trovato"));
+      if (!"APERTO".equals(o.getStato())) {
+          throw new RuntimeException("Stato ordine non valido");
+      }
+      if (o.getTotale() <= 0) {
+          throw new RuntimeException("Ordine vuoto");
+      }
+      o.setStato("IN_CUCINA");
+      return ordineRepository.save(o);
+  }
+
+
+--- METODO 5: pagaOrdine(ordineId) ---
+Cosa fa: IN_CUCINA → PAGATO, tavolo torna libero.
+
+Passi:
+  1. Trova ordine
+  2. Se stato != IN_CUCINA → ERRORE
+  3. ordine.stato = "PAGATO"
+  4. ordine.pagato_il = adesso
+  5. Salva
+  (Il tavolo diventa verde automaticamente perche non ha piu ordine attivo)
+
+In Java:
+  public Ordine pagaOrdine(Long ordineId) {
+      Ordine o = ordineRepository.findById(ordineId)
+          .orElseThrow(() -> new RuntimeException("Ordine non trovato"));
+      if (!"IN_CUCINA".equals(o.getStato())) {
+          throw new RuntimeException("Ordine non in cucina");
+      }
+      o.setStato("PAGATO");
+      o.setPagatoIl(LocalDateTime.now());
+      return ordineRepository.save(o);
+  }
+
+
+--- METODO 6: getOrdiniAttivi() ---
+Cosa fa: lista ordini APERTO + IN_CUCINA per pagina Ordini.
+
+In Java:
+  public List<OrdineResponse> getOrdiniAttivi() {
+      List<Ordine> lista = ordineRepository.findByStatoIn(
+          List.of("APERTO", "IN_CUCINA"));
+      List<OrdineResponse> risposta = new ArrayList<>();
+      for (Ordine o : lista) {
+          OrdineResponse r = new OrdineResponse();
+          r.setId(o.getId());
+          r.setStato(o.getStato());
+          r.setTotale(o.getTotale());
+          Tavolo t = tavoloRepository.findById(o.getTavoloId()).get();
+          r.setTavoloNumero(t.getNumero());
+          r.setRighe(caricaRighe(o.getId()));
+          risposta.add(r);
+      }
+      return risposta;
+  }
+
+
+--- METODO 7: trovaOrdineAttivo(tavoloId) --- (usato anche da Tavoli)
+  public Ordine trovaOrdineAttivo(Long tavoloId) {
+      return ordineRepository.findByTavoloIdAndStatoIn(
+          tavoloId, List.of("APERTO", "IN_CUCINA"));
+  }
+
+
+================================================================================
+  PARTE 4 — ENDPOINT (Controller)
+================================================================================
+
+  POST   /api/ordini
+         Body: { "tavoloId": 3 }
+         → creaOrdine(tavoloId)
+
+  POST   /api/ordini/{id}/righe
+         Body: { "piattoId": 1, "quantita": 2 }
+         → aggiungiRiga(id, piattoId, quantita)
+
+  PUT    /api/ordini/{id}/in-cucina
+         → inviaInCucina(id)
+
+  PUT    /api/ordini/{id}/paga
+         → pagaOrdine(id)
+
+  GET    /api/ordini?attivi=true
+         → getOrdiniAttivi()
+
+  GET    /api/ordini/{id}
+         → getOrdineById(id) con tutte le righe
+
+
+Esempio Controller:
+  @PostMapping("/ordini")
+  public OrdineResponse crea(@RequestBody CreaOrdineRequest req) {
+      return ordineService.creaOrdine(req.getTavoloId());
+  }
+
+
+================================================================================
+  PARTE 5 — ORDINE DI LAVORO
+================================================================================
+
+  [ ] 1. Entity Ordine + RigaOrdine + Repository
+  [ ] 2. creaOrdine() — prova con Postman
+  [ ] 3. aggiungiRiga() + ricalcolaTotale()
+  [ ] 4. inviaInCucina()
+  [ ] 5. pagaOrdine()
+  [ ] 6. getOrdiniAttivi()
+  [ ] 7. Prova flusso completo su ordini.html
+
+
+================================================================================
+  PARTE 6 — FLUSSO COMPLETO (esempio numerico)
+================================================================================
+
+Tavolo 5 libero:
+
+  1. POST /api/ordini  { tavoloId: 5 }
+     → Ordine id=10, stato=APERTO, totale=0
+
+  2. POST /api/ordini/10/righe  { piattoId: 1, quantita: 2 }
+     → Pizza 8€ x 2 = 16€, totale ordine = 16
+
+  3. POST /api/ordini/10/righe  { piattoId: 4, quantita: 1 }
+     → Tiramisu 6€ x 1 = 6€, totale ordine = 22
+
+  4. PUT /api/ordini/10/in-cucina
+     → stato = IN_CUCINA
+
+  5. PUT /api/ordini/10/paga
+     → stato = PAGATO, pagato_il = oggi 14:30
+     → Tavolo 5 verde, incasso dashboard +22€
+
+
+================================================================================
+  PARTE 7 — COSA NON FARE
+================================================================================
+
+  X Stati extra: PRONTO, SERVITO, ANNULLATO
+  X Piu ordini attivi sullo stesso tavolo
+  X Modificare righe dopo IN_CUCINA
+  X Pagare ordine ancora APERTO
+  X Sconti, mance, divisione conto
+
+
+================================================================================
+  PARTE 8 — SE TI BLOCHI
+================================================================================
+
+  Totale sbagliato?
+  → Chiama ricalcolaTotale() dopo ogni aggiunta riga
+
+  "Tavolo gia occupato" ma tavolo sembra libero?
+  → Cerca ordini APERTO/IN_CUCINA su quel tavolo_id nel database
+
+  Non riesci a pagare?
+  → Ordine deve essere IN_CUCINA, non APERTO
+
+
+================================================================================
+  FINE — Vedi anche: ROADMAP-TAVOLI.txt, ROADMAP-MENU.txt
+  Frontend: dashboard/ordini.html + dashboard/js/ordini.js
+================================================================================
