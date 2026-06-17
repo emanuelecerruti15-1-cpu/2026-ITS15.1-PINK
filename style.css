@@ -1,0 +1,1011 @@
+/* ================================================================
+   FOGLIO DI STILE PRINCIPALE — Dashboard RistoManager
+   Descrizione: Tutti gli stili visivi della dashboard.
+   Include variabili colore, layout, sidebar, header, KPI e widget.
+   ================================================================ */
+
+
+/* ================================================================
+   VARIABILI CSS — Palette colori e valori riutilizzabili
+   Descrizione: Definisce colori, spaziature e ombre del design.
+   Modificando queste variabili si cambia l'aspetto globale.
+   ================================================================ */
+:root {
+    /* --- Colori di sfondo --- */
+    --bg-page: #f4f5f7;           /* Sfondo grigio chiaro dell'area principale */
+    --bg-card: #ffffff;            /* Sfondo bianco delle card */
+    --bg-sidebar: #1a1c23;         /* Sfondo scuro della sidebar */
+    --bg-sidebar-active: #252830;  /* Sfondo voce menu attiva */
+    --bg-floor: #eef0f3;           /* Sfondo area piantina tavoli */
+
+    /* --- Colori accent e stati --- */
+    --color-red: #e53e3e;          /* Rosso principale (logo, attivo, occupato) */
+    --color-red-light: #fed7d7;    /* Rosso chiaro per sfondo icone KPI */
+    --color-green: #48bb78;        /* Verde (libero, trend positivo) */
+    --color-green-light: #c6f6d5;  /* Verde chiaro per sfondo icone KPI */
+    --color-blue: #4299e1;         /* Blu (ordini, badge aperto) */
+    --color-blue-light: #bee3f8;   /* Blu chiaro per sfondo icone KPI */
+    --color-orange: #ed8936;       /* Arancione (prenotazioni, pronto) */
+    --color-orange-light: #feebc8;  /* Arancione chiaro per sfondo icone KPI */
+    --color-gray: #a0aec0;         /* Grigio (testo secondario, non disponibile) */
+    --color-gray-dark: #718096;    /* Grigio scuro per testi descrittivi */
+
+    /* --- Colori testo --- */
+    --text-primary: #1a202c;       /* Testo principale scuro */
+    --text-secondary: #718096;     /* Testo secondario grigio */
+    --text-sidebar: #a0aec0;       /* Testo voci menu inattive */
+    --text-sidebar-active: #ffffff;/* Testo voce menu attiva */
+
+    /* --- Dimensioni layout --- */
+    --sidebar-width: 240px;        /* Larghezza fissa della sidebar */
+    --header-height: auto;         /* Altezza header (auto per contenuto) */
+    --radius-card: 16px;           /* Border-radius grande per card */
+    --radius-btn: 8px;             /* Border-radius medio per bottoni */
+    --radius-sm: 6px;              /* Border-radius piccolo per badge */
+
+    /* --- Ombre --- */
+    --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
+    /* Ombra morbida che fa "galleggiare" le card sullo sfondo */
+
+    /* --- Spaziature --- */
+    --spacing-page: 28px;          /* Padding interno area contenuto */
+    --spacing-card: 20px;          /* Padding interno delle card */
+}
+
+
+/* ================================================================
+   RESET E BASE — Normalizzazione e stili globali
+   Descrizione: Azzera margini/padding e imposta font e box-sizing.
+   ================================================================ */
+
+/* Box-sizing border-box su tutti gli elementi: padding incluso nella larghezza */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+/* Stili base del body: font, colore testo, sfondo pagina */
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 14px;
+    line-height: 1.5;
+    color: var(--text-primary);
+    background-color: var(--bg-page);
+    -webkit-font-smoothing: antialiased; /* Testo più nitido su macOS */
+}
+
+/* Rimuove sottolineatura default dai link */
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+/* Rimuove stile default dalle liste */
+ul, ol {
+    list-style: none;
+}
+
+/* Rende le icone SVG responsive dentro i contenitori */
+svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+/* Rimuove bordo default dagli input e bottoni al focus visivo browser */
+button,
+input,
+select {
+    font-family: inherit;
+    font-size: inherit;
+    border: none;
+    outline: none;
+    background: none;
+}
+
+/* Cursore pointer su elementi cliccabili */
+button {
+    cursor: pointer;
+}
+
+
+/* ================================================================
+   LAYOUT PRINCIPALE — Struttura sidebar + contenuto
+   Descrizione: Flexbox orizzontale: sidebar fissa + area scrollabile.
+   ================================================================ */
+
+/* Contenitore radice: occupa tutta la viewport */
+.app-layout {
+    display: flex;
+    min-height: 100vh;
+}
+
+/* Area contenuto principale: occupa lo spazio restante a destra */
+.main-content {
+    flex: 1;
+    min-width: 0; /* Evita overflow orizzontale con grid interne */
+    padding: var(--spacing-page);
+    display: flex;
+    flex-direction: column;
+    gap: 24px; /* Spazio verticale tra le sezioni */
+}
+
+
+/* ================================================================
+   SIDEBAR — Menu navigazione laterale scuro
+   Descrizione: Colonna fissa a sinistra con logo, menu e logout.
+   ================================================================ */
+
+/* Contenitore sidebar: colonna flex verticale, larghezza fissa */
+.sidebar {
+    width: var(--sidebar-width);
+    min-height: 100vh;
+    background-color: var(--bg-sidebar);
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0; /* Non si restringe mai */
+    position: sticky;
+    top: 0;
+    height: 100vh;
+}
+
+/* --- Intestazione sidebar (logo + pulsante chiudi) --- */
+.sidebar__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 16px 16px;
+}
+
+/* Contenitore logo: icona + testo affiancati */
+.sidebar__logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* Icona circolare rossa del logo */
+.sidebar__logo-icon {
+    width: 32px;
+    height: 32px;
+    flex-shrink: 0;
+}
+
+/* Testo "RistoManager" accanto al logo */
+.sidebar__logo-text {
+    font-size: 16px;
+    font-weight: 700;
+    color: #ffffff;
+    letter-spacing: -0.02em;
+}
+
+/* Pulsante X per chiudere sidebar (visivamente discreto) */
+.sidebar__close-btn {
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-sidebar);
+    font-size: 14px;
+    border-radius: var(--radius-sm);
+    transition: background 0.2s, color 0.2s;
+}
+
+/* Hover sul pulsante chiudi: sfondo leggermente più chiaro */
+.sidebar__close-btn:hover {
+    background: rgba(255, 255, 255, 0.08);
+    color: #ffffff;
+}
+
+/* --- Navigazione menu --- */
+.sidebar__nav {
+    flex: 1;
+    padding: 8px 12px;
+    overflow-y: auto; /* Scroll se menu troppo lungo */
+}
+
+/* Lista voci menu: colonna verticale */
+.sidebar__menu {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+/* Singola voce del menu */
+.sidebar__menu-item {
+    border-radius: var(--radius-btn);
+}
+
+/* Voce menu attiva (Dashboard): sfondo più chiaro */
+.sidebar__menu-item--active {
+    background-color: var(--bg-sidebar-active);
+}
+
+/* Link cliccabile di ogni voce menu */
+.sidebar__link {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 12px;
+    border-radius: var(--radius-btn);
+    color: var(--text-sidebar);
+    transition: background 0.2s, color 0.2s;
+}
+
+/* Hover su voci menu non attive */
+.sidebar__menu-item:not(.sidebar__menu-item--active) .sidebar__link:hover {
+    background: rgba(255, 255, 255, 0.05);
+    color: #ffffff;
+}
+
+/* Voce attiva: testo bianco */
+.sidebar__menu-item--active .sidebar__link {
+    color: var(--text-sidebar-active);
+}
+
+/* Icona di ogni voce menu (20x20px) */
+.sidebar__link-icon {
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+    color: var(--text-sidebar);
+}
+
+/* Icona voce attiva: colore rosso accent */
+.sidebar__link-icon--active {
+    color: var(--color-red);
+}
+
+/* Testo etichetta voce menu */
+.sidebar__link-text {
+    font-size: 14px;
+    font-weight: 500;
+}
+
+
+/* ================================================================
+   HEADER SUPERIORE — Saluto e identificativo gestionale (MVP)
+   Descrizione: Barra orizzontale in cima all'area contenuto.
+   ================================================================ */
+
+/* Contenitore header: flex con saluto a sinistra e azioni a destra */
+.top-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    flex-wrap: wrap;
+}
+
+/* --- Blocco saluto --- */
+.top-header__greeting {
+    flex: 1;
+    min-width: 200px;
+}
+
+/* Titolo "Buongiorno 👋" — saluto generico senza nome utente */
+.top-header__title {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--text-primary);
+    letter-spacing: -0.03em;
+    margin-bottom: 4px;
+}
+
+/* Sottotitolo descrittivo grigio */
+.top-header__subtitle {
+    font-size: 14px;
+    color: var(--text-secondary);
+}
+
+/* --- Blocco azioni (ricerca + notifiche + profilo) --- */
+.top-header__actions {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+
+/* ================================================================
+   IDENTIFICATIVO GESTIONALE — Nome app in alto a destra (MVP)
+   Descrizione: Accesso unico, nessun login né ruoli.
+   ================================================================ */
+
+/* Contenitore profilo: avatar + testo affiancati */
+.user-profile {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* Cerchio avatar con iniziale */
+.user-profile__avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--bg-sidebar);
+    color: #ffffff;
+    font-weight: 600;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+/* Colonna nome gestionale */
+.user-profile__info {
+    display: flex;
+    flex-direction: column;
+}
+
+/* Nome del gestionale */
+.user-profile__name {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-primary);
+    line-height: 1.3;
+}
+
+
+/* ================================================================
+   SEZIONE KPI — 4 card metriche in riga
+   Descrizione: Grid responsive con icone colorate e valori numerici.
+   ================================================================ */
+
+/* Grid 4 colonne uguali per le card KPI */
+.kpi-section {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+}
+
+/* Singola card KPI: flex orizzontale icona + contenuto */
+.kpi-card {
+    background: var(--bg-card);
+    border-radius: var(--radius-card);
+    padding: var(--spacing-card);
+    box-shadow: var(--shadow-card);
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+}
+
+/* Contenitore icona KPI: quadrato arrotondato 48x48 */
+.kpi-card__icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+/* Icona SVG dentro il quadrato KPI */
+.kpi-card__icon svg {
+    width: 24px;
+    height: 24px;
+}
+
+/* Variante rossa: incasso */
+.kpi-card__icon--red {
+    background: var(--color-red-light);
+    color: var(--color-red);
+}
+
+/* Variante verde: tavoli occupati */
+.kpi-card__icon--green {
+    background: var(--color-green-light);
+    color: var(--color-green);
+}
+
+/* Variante blu: ordini attivi */
+.kpi-card__icon--blue {
+    background: var(--color-blue-light);
+    color: var(--color-blue);
+}
+
+/* Variante arancione: prenotazioni */
+.kpi-card__icon--orange {
+    background: var(--color-orange-light);
+    color: var(--color-orange);
+}
+
+/* Colonna testi della card KPI */
+.kpi-card__content {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+}
+
+/* Etichetta maiuscola sopra il valore (es. INCASSO OGGI) */
+.kpi-card__label {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+}
+
+/* Valore numerico principale grande */
+.kpi-card__value {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--text-primary);
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+}
+
+/* Testo secondario sotto il valore */
+.kpi-card__subtext {
+    font-size: 12px;
+    color: var(--text-secondary);
+    margin-top: 2px;
+}
+
+
+/* ================================================================
+   CARD GENERICHE — Stile base condiviso da tutti i widget
+   Descrizione: Sfondo bianco, bordi arrotondati, ombra leggera.
+   ================================================================ */
+
+/* Classe base per ogni card/widget */
+.card {
+    background: var(--bg-card);
+    border-radius: var(--radius-card);
+    box-shadow: var(--shadow-card);
+    padding: var(--spacing-card);
+}
+
+/* Intestazione card: titolo a sinistra, link/azioni a destra */
+.card__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+    gap: 12px;
+}
+
+/* Titolo sezione dentro la card */
+.card__title {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+/* Link "Vedi tutti" in blu/rosso accent */
+.card__link {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--color-red);
+    transition: opacity 0.2s;
+}
+
+/* Hover link card */
+.card__link:hover {
+    opacity: 0.8;
+}
+
+
+/* ================================================================
+   SEZIONE CENTRALE — Piantina + widget laterali
+   Descrizione: Grid 2 colonne: 65% piantina, 35% widget destri.
+   ================================================================ */
+
+/* Grid principale sezione centrale */
+.middle-section {
+    display: grid;
+    grid-template-columns: 1.65fr 1fr;
+    gap: 20px;
+    align-items: start;
+}
+
+/* Colonna widget laterali: ordini + prenotazioni impilati */
+.side-widgets {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+
+/* ================================================================
+   Piantina SALA — Mappa tavoli interattiva
+   Descrizione: Area grigia con tavoli posizionati e legenda colori.
+   ================================================================ */
+
+/* Card piantina: occupa tutta la colonna sinistra */
+.floor-plan-card {
+    display: flex;
+    flex-direction: column;
+}
+
+/* --- Area piantina (contenitore tavoli) --- */
+.floor-plan {
+    position: relative;
+    width: 100%;
+    background: var(--bg-floor);
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+    margin-bottom: 16px;
+    padding: 16px;
+}
+
+/* Contorno interno sala: griglia omogenea 4 colonne × 3 righe */
+.floor-plan__room {
+    display: grid;
+    /* 4 colonne uguali: ogni tavolo occupa la stessa larghezza */
+    grid-template-columns: repeat(4, 1fr);
+    /* 3 righe uguali: riempie tutta l'altezza della sala */
+    grid-template-rows: repeat(3, 1fr);
+    gap: 12px;
+    width: 100%;
+    min-height: 340px;
+    padding: 28px 20px;
+    border: 2px dashed #d1d9e6;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.45);
+}
+
+/* Singola cella della griglia: centra il tavolo nello spazio disponibile */
+.floor-plan__cell {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 88px;
+}
+
+/* Decorazione pianta verde negli angoli */
+.floor-plan__plant {
+    position: absolute;
+    font-size: 22px;
+    opacity: 0.75;
+    pointer-events: none;
+    z-index: 3;
+}
+
+/* Pianta angolo alto sinistra */
+.floor-plan__plant--top-left {
+    top: 8px;
+    left: 8px;
+}
+
+/* Pianta angolo basso destra */
+.floor-plan__plant--bottom-right {
+    bottom: 8px;
+    right: 8px;
+    transform: scaleX(-1);
+}
+
+
+/* ================================================================
+   POSTAZIONE TAVOLO — Contenitore tavolo + sedie
+   Descrizione: Ogni tavolo ha sedie intorno per effetto piantina reale.
+   ================================================================ */
+
+/* Contenitore singola postazione: posizione relativa per le sedie */
+.table-spot {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+/* Dimensioni contenitore in base alla forma del tavolo */
+.table-spot--circle {
+    width: 72px;
+    height: 72px;
+}
+
+.table-spot--square {
+    width: 72px;
+    height: 72px;
+}
+
+.table-spot--rect-h {
+    width: 96px;
+    height: 72px;
+}
+
+.table-spot--rect-v {
+    width: 56px;
+    height: 108px;
+}
+
+/* Sedia singola — piccolo rettangolo arrotondato attorno al tavolo */
+.table-spot__chair {
+    position: absolute;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 4px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+    z-index: 0;
+}
+
+/* Sedia posizionata sopra il tavolo (Nord) */
+.table-spot__chair--n {
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 18px;
+    height: 10px;
+}
+
+/* Sedia posizionata sotto il tavolo (Sud) */
+.table-spot__chair--s {
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 18px;
+    height: 10px;
+}
+
+/* Sedia posizionata a sinistra (Ovest) */
+.table-spot__chair--w {
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 10px;
+    height: 18px;
+}
+
+/* Sedia posizionata a destra (Est) */
+.table-spot__chair--e {
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 10px;
+    height: 18px;
+}
+
+/* Sedie extra per tavoli rettangolari lunghi (tavolo 4) */
+.table-spot--rect-h .table-spot__chair--n,
+.table-spot--rect-h .table-spot__chair--s {
+    width: 14px;
+}
+
+/* Sedie per tavolo verticale (tavolo 9): solo lato sinistro e destro */
+.table-spot--rect-v .table-spot__chair--w,
+.table-spot--rect-v .table-spot__chair--e {
+    height: 14px;
+}
+
+
+/* ================================================================
+   TAVOLI — Elementi cliccabili sulla piantina
+   Descrizione: Forme circolari, quadrate e rettangolari colorate.
+   ================================================================ */
+
+/* Stile base comune a tutti i tavoli */
+.table {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: 700;
+    color: #ffffff;
+    border: 2px solid transparent;
+    cursor: pointer;
+    transition: transform 0.15s, box-shadow 0.15s;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+}
+
+/* Hover tavolo cliccabile: leggero ingrandimento */
+.table:not(:disabled):hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18);
+}
+
+/* Tavolo disabilitato (non disponibile): nessun hover */
+.table:disabled {
+    cursor: not-allowed;
+    opacity: 0.9;
+    box-shadow: none;
+}
+
+/* --- Forme tavolo --- */
+
+/* Forma circolare (tavoli 1, 2, 6, 7, 10, 11) */
+.table--circle {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+}
+
+/* Forma quadrata (tavoli 3, 5, 12) */
+.table--square {
+    width: 48px;
+    height: 48px;
+    border-radius: 10px;
+}
+
+/* Forma rettangolare orizzontale (tavoli 4, 8) */
+.table--rect-h {
+    width: 72px;
+    height: 44px;
+    border-radius: 10px;
+}
+
+/* Forma rettangolare verticale (tavolo 9 — bancone/lato parete) */
+.table--rect-v {
+    width: 40px;
+    height: 76px;
+    border-radius: 10px;
+}
+
+/* --- Colori stato tavolo --- */
+
+/* Stato LIBERO: verde */
+.table--free {
+    background-color: var(--color-green);
+    border-color: #38a169;
+}
+
+/* Stato OCCUPATO: rosso */
+.table--occupied {
+    background-color: var(--color-red);
+    border-color: #c53030;
+}
+
+/* Stato PRENOTATO: arancione (classe pronta per uso futuro) */
+.table--reserved {
+    background-color: var(--color-orange);
+    border-color: #dd6b20;
+}
+
+/* Stato NON DISPONIBILE: grigio */
+.table--unavailable {
+    background-color: #cbd5e0;
+    border-color: #a0aec0;
+    color: #718096;
+}
+
+
+/* ================================================================
+   LEGENDA Piantina — Spiegazione colori stati tavolo
+   Descrizione: Riga in basso con pallini colorati e etichette.
+   ================================================================ */
+
+/* Contenitore legenda: flex centrato con gap tra elementi */
+.floor-plan-legend {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 20px;
+    padding-top: 4px;
+}
+
+/* Singolo elemento legenda: pallino + testo */
+.floor-plan-legend__item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    color: var(--text-secondary);
+}
+
+/* Pallino colorato della legenda */
+.floor-plan-legend__dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+/* Pallino verde = Libero */
+.floor-plan-legend__dot--free {
+    background: var(--color-green);
+}
+
+/* Pallino rosso = Occupato */
+.floor-plan-legend__dot--occupied {
+    background: var(--color-red);
+}
+
+/* Pallino arancione = Prenotato */
+.floor-plan-legend__dot--reserved {
+    background: var(--color-orange);
+}
+
+/* Pallino grigio = Non disponibile */
+.floor-plan-legend__dot--unavailable {
+    background: #cbd5e0;
+}
+
+
+/* ================================================================
+   WIDGET ORDINI ATTIVI — Lista ordini in corso
+   Descrizione: Righe con tavolo, piatti, prezzo e badge stato.
+   ================================================================ */
+
+/* Singola riga ordine: flex con info a sinistra e badge a destra */
+.orders-list__item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 12px 0;
+    border-bottom: 1px solid #edf2f7;
+}
+
+/* Ultima riga: nessun bordo inferiore */
+.orders-list__item:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+/* Prima riga: nessun padding superiore extra */
+.orders-list__item:first-child {
+    padding-top: 0;
+}
+
+/* Colonna info ordine (tavolo + dettagli) */
+.orders-list__info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+/* Nome tavolo in grassetto */
+.orders-list__table {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+/* Dettagli secondari: piatti e prezzo */
+.orders-list__details {
+    font-size: 12px;
+    color: var(--text-secondary);
+}
+
+
+/* ================================================================
+   BADGE STATO ORDINE — Etichette colorate (In cucina, Pronto, Aperto)
+   Descrizione: Pillole arrotondate con colori per ogni stato ordine.
+   ================================================================ */
+
+/* Stile base badge: testo piccolo, padding, bordi arrotondati */
+.status-badge {
+    font-size: 11px;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 999px;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+/* Badge "In cucina": sfondo rosso chiaro, testo rosso */
+.status-badge--kitchen {
+    background: #fed7d7;
+    color: #c53030;
+}
+
+/* Badge "Pronto": sfondo arancione chiaro, testo arancione scuro */
+.status-badge--ready {
+    background: #feebc8;
+    color: #c05621;
+}
+
+/* Badge "Aperto": sfondo blu chiaro, testo blu scuro */
+.status-badge--open {
+    background: #bee3f8;
+    color: #2b6cb0;
+}
+
+
+/* ================================================================
+   WIDGET PRENOTAZIONI — Lista prossime prenotazioni
+   Descrizione: Nome cliente, orario, tavolo e numero persone.
+   ================================================================ */
+
+/* Singola riga prenotazione */
+.reservations-list__item {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: 12px 0;
+    border-bottom: 1px solid #edf2f7;
+}
+
+/* Ultima riga senza bordo */
+.reservations-list__item:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.reservations-list__item:first-child {
+    padding-top: 0;
+}
+
+/* Nome cliente in grassetto */
+.reservations-list__name {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+/* Meta info: orario, tavolo, persone */
+.reservations-list__meta {
+    font-size: 12px;
+    color: var(--text-secondary);
+}
+
+
+/* ================================================================
+   RESPONSIVE — Adattamento a schermi più piccoli
+   Descrizione: Media query per tablet e mobile.
+   ================================================================ */
+
+/* Tablet: KPI passano a 2 colonne, sezione centrale a 1 colonna */
+@media (max-width: 1200px) {
+    .kpi-section {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .middle-section {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Tablet piccolo */
+@media (max-width: 900px) {
+    .top-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .top-header__actions {
+        width: 100%;
+    }
+}
+
+/* Mobile: sidebar nascosta (futuro: menu hamburger), KPI a 1 colonna */
+@media (max-width: 768px) {
+    .sidebar {
+        display: none;
+    }
+
+    .kpi-section {
+        grid-template-columns: 1fr;
+    }
+
+    .main-content {
+        padding: 16px;
+    }
+
+    /* Piantina mobile: griglia 3×4 mantiene distribuzione omogenea */
+    .floor-plan__room {
+        grid-template-columns: repeat(3, 1fr);
+        grid-template-rows: repeat(4, 1fr);
+        min-height: 400px;
+        gap: 8px;
+        padding: 20px 12px;
+    }
+
+    /* Tavoli leggermente più piccoli su mobile */
+    .table-spot--circle,
+    .table-spot--square {
+        width: 64px;
+        height: 64px;
+    }
+
+    .table-spot--rect-h {
+        width: 84px;
+        height: 64px;
+    }
+
+    .table-spot--rect-v {
+        width: 50px;
+        height: 90px;
+    }
+}
