@@ -1,0 +1,455 @@
+================================================================================
+  RistoManager — ROADMAP LOGICA DASHBOARD (per principianti Java)
+================================================================================
+
+A chi serve: a te che stai imparando Java e devi capire COSA deve fare
+             ogni parte, passo passo, nel modo piu semplice possibile.
+
+Come funziona il gestionale (idea base):
+  - Il FRONTEND (HTML/JS gia pronto) chiede i dati al BACKEND (Java).
+  - Java legge e scrive sul DATABASE (H2 o MySQL).
+  - Non serve login, non servono ruoli, una sola sala, 12 tavoli fissi.
+
+Regola d'oro: tieni tutto SEMPLICE. Se una cosa ti sembra difficile,
+              probabilmente la stiamo complicando troppo — chiedi e semplifica.
+
+
+================================================================================
+  PARTE 0 — PRIMA DI INIZIARE (cosa ti serve)
+================================================================================
+
+1. Spring Boot (progetto Java che crea il server web)
+   - Cosa fa: quando lo avvii, il computer ascolta su localhost:8080
+   - Come: crea progetto Spring Boot con Web + JPA + H2 Database
+
+2. Database H2 (dati salvati su file, facile per iniziare)
+   - Cosa fa: tiene i tavoli, piatti, ordini, prenotazioni
+   - Come: Spring lo configura quasi da solo con application.properties
+
+3. Frontend gia pronto nella cartella dashboard/
+   - Chiama Java con fetch() verso http://localhost:8080/api/...
+   - Tu devi solo rispondere con i JSON giusti
+
+
+================================================================================
+  PARTE 1 — LE 5 TABELLE DEL DATABASE (cosa salviamo)
+================================================================================
+
+Pensa al database come a 5 fogli Excel collegati tra loro.
+
+
+--- TABELLA 1: tavolo ---
+Cosa contiene: i 12 tavoli del ristorante (fissi, non li crei ogni giorno).
+
+Campi:
+  - id          → numero identificativo (1, 2, 3...)
+  - numero      → il numero che vedi sulla piantina (1-12)
+  - posti       → quante persone ci stanno (es. 4)
+  - non_disponibile → true/false (tavolo rotto o fuori servizio)
+
+Come si fa in Java (semplice):
+  - Crea una classe Tavolo con questi campi
+  - Aggiungi @Entity e @Id (Spring JPA fa il resto)
+  - All'avvio del programma, inserisci 12 tavoli una volta sola (seed)
+
+
+--- TABELLA 2: piatto ---
+Cosa contiene: il menu (Pizza Margherita, Carbonara, ecc.)
+
+Campi:
+  - id, nome, prezzo, disponibile (true = si puo ordinare)
+
+Come si fa:
+  - Classe Piatto con @Entity
+  - All'avvio inserisci 5-10 piatti di esempio
+
+
+--- TABELLA 3: ordine ---
+Cosa contiene: ogni ordine aperto o chiuso di un tavolo.
+
+Campi:
+  - id
+  - tavolo_id     → a quale tavolo appartiene
+  - stato         → APERTO, IN_CUCINA o PAGATO (solo 3 valori!)
+  - totale        → somma di tutti i piatti
+  - creato_il     → quando e stato creato
+  - pagato_il     → quando e stato pagato (null se ancora aperto)
+
+Come si fa:
+  - Classe Ordine con @Entity
+  - stato puo essere una String o un enum semplice
+
+
+--- TABELLA 4: riga_ordine ---
+Cosa contiene: i singoli piatti dentro un ordine.
+
+Esempio: ordine del tavolo 2 ha 2x Pizza + 1x Acqua = 3 righe.
+
+Campi:
+  - id, ordine_id, piatto_id, quantita, prezzo_unitario
+
+Perche prezzo_unitario? Perche se domani alzi il prezzo della pizza,
+  gli ordini di oggi tengono il prezzo di quando sono stati ordinati.
+
+Come si fa:
+  - Classe RigaOrdine con @Entity
+  - Quando aggiungi un piatto all'ordine, crei una nuova riga
+
+
+--- TABELLA 5: prenotazione ---
+Cosa contiene: chi viene oggi e a che ora.
+
+Campi:
+  - id, nome_cliente, ora, tavolo_id (opzionale), persone, cancellata
+
+Come si fa:
+  - Classe Prenotazione con @Entity
+  - cancellata = true significa "eliminata" (non la cancelli davvero dal DB)
+
+
+================================================================================
+  PARTE 2 — LA DASHBOARD: cosa deve fare ogni pezzo
+================================================================================
+
+La Dashboard e la prima pagina. Mostra un riassunto della giornata.
+Il frontend chiama: GET /api/dashboard
+Java deve rispondere con UN SOLO JSON che contiene tutto.
+
+
+--- PEZZO 1: Saluto "Buongiorno" ---
+Cosa fa: niente lato Java. E testo fisso nel HTML.
+Tu non devi fare nulla.
+
+
+--- PEZZO 2: Card "INCASSO OGGI" ---
+Cosa deve mostrare: quanti soldi hai incassato oggi (solo ordini pagati).
+
+Logica semplice:
+  1. Prendi tutti gli ordini con stato = PAGATO
+  2. Filtra quelli pagati_il = data di oggi
+  3. Somma il campo totale di ciascuno
+  4. Restituisci il numero (es. 1248.00)
+
+In Java (idea):
+  List<Ordine> pagati = ordineRepository.findByStato("PAGATO");
+  double incasso = 0;
+  for (Ordine o : pagati) {
+      if (o.getPagatoIl().toLocalDate().equals(LocalDate.now())) {
+          incasso = incasso + o.getTotale();
+      }
+  }
+
+
+--- PEZZO 3: Card "TAVOLI OCCUPATI" ---
+Cosa deve mostrare: es. "3 / 12" (3 tavoli occupati su 12 totali).
+
+Logica semplice:
+  1. Conta quanti tavoli hanno un ordine APERTO o IN_CUCINA
+  2. Il totale e sempre 12 (o i tavoli non_disponibile esclusi, se vuoi)
+
+In Java (idea):
+  int occupati = 0;
+  for (Tavolo t : tuttiITavoli) {
+      Ordine ordine = trovaOrdineAttivoDelTavolo(t.getId());
+      if (ordine != null) occupati++;
+  }
+
+
+--- PEZZO 4: Card "ORDINI ATTIVI" ---
+Cosa deve mostrare: quanti ordini non sono ancora pagati.
+
+Logica semplice:
+  1. Conta ordini con stato APERTO o IN_CUCINA
+  2. Opzionale: sotto-testo "X in cucina" = conta solo IN_CUCINA
+
+In Java:
+  int attivi = ordineRepository.countByStatoIn("APERTO", "IN_CUCINA");
+
+
+--- PEZZO 5: Card "PRENOTAZIONI OGGI" ---
+Cosa deve mostrare: quante prenotazioni ci sono oggi (non cancellate).
+
+Logica semplice:
+  1. Conta prenotazioni con cancellata = false
+  2. (Per MVP tutte le prenotazioni sono "oggi")
+
+In Java:
+  int count = prenotazioneRepository.countByCancellataFalse();
+
+
+--- PEZZO 6: Piantina tavoli (la mappa con i 12 tavoli colorati) ---
+Cosa deve fare: mostrare ogni tavolo con il colore giusto.
+
+I 4 colori:
+  VERDE    = Libero       → nessun ordine aperto
+  ROSSO    = Occupato     → c'e ordine APERTO o IN_CUCINA
+  ARANCIONE= Prenotato    → prenotazione entro 2 ore, tavolo libero
+  GRIGIO   = Non disp.    → non_disponibile = true
+
+Come capire il colore (in ordine di priorita):
+  1. Se non_disponibile = true  → GRIGIO (vince sempre)
+  2. Se c'e ordine attivo         → ROSSO
+  3. Se c'e prenotazione vicina   → ARANCIONE
+  4. Altrimenti                    → VERDE
+
+In Java (funzione semplice):
+  String calcolaStato(Tavolo t) {
+      if (t.isNonDisponibile()) return "NON_DISPONIBILE";
+      if (haOrdineAttivo(t.getId())) return "OCCUPATO";
+      if (haPrenotazioneVicina(t.getId())) return "PRENOTATO";
+      return "LIBERO";
+  }
+
+Cosa mandare al frontend per ogni tavolo:
+  { id, numero, posti, forma, stato }
+
+
+--- PEZZO 7: Widget "Ordini attivi" (lista a destra, max 5) ---
+Cosa deve mostrare: i primi 5 ordini non pagati con tavolo, totale, stato.
+
+Logica:
+  1. Prendi ordini APERTO + IN_CUCINA
+  2. Prendi solo i primi 5
+  3. Per ognuno: numero tavolo, quanti piatti, totale, stato
+
+JSON esempio:
+  { id: 1, tavoloNumero: 2, totale: 42, stato: "IN_CUCINA", numPiatti: 4 }
+
+
+--- PEZZO 8: Widget "Prenotazioni" (lista a destra, max 5) ---
+Cosa deve mostrare: le prossime prenotazioni di oggi.
+
+Logica:
+  1. Prendi prenotazioni non cancellate
+  2. Ordina per ora
+  3. Prendi i primi 5
+
+JSON esempio:
+  { id: 1, nomeCliente: "Giulia Rossi", ora: "14:30", tavoloNumero: 4, persone: 2 }
+
+
+--- PEZZO 9: Endpoint unico Dashboard ---
+Tutto insieme in GET /api/dashboard:
+
+{
+  "incassoOggi": 1248.00,
+  "tavoliOccupati": 3,
+  "tavoliTotali": 12,
+  "ordiniAttivi": 3,
+  "ordiniInCucina": 2,
+  "prenotazioniOggi": 5,
+  "tavoli": [ ...lista 12 tavoli con stato... ],
+  "ordini": [ ...max 5 ordini... ],
+  "prenotazioni": [ ...max 5 prenotazioni... ]
+}
+
+Come si fa in Java (semplice):
+  - Un Controller con @GetMapping("/api/dashboard")
+  - Chiama un Service che fa i conteggi sopra
+  - Restituisce un oggetto (o Map) convertito in JSON automaticamente
+
+
+================================================================================
+  PARTE 3 — ORDINE DI LAVORO CONSIGLIATO (roadmap passo passo)
+================================================================================
+
+Fai UN passo alla volta. Non passare al successivo se il precedente non funziona.
+
+
+--- SETTIMANA / FASI ---
+
+FASE 1 — Base (giorno 1-2)
+  [ ] Crea progetto Spring Boot
+  [ ] Crea le 5 classi Entity (Tavolo, Piatto, Ordine, RigaOrdine, Prenotazione)
+  [ ] Crea i Repository (interfacce che estendono JpaRepository)
+  [ ] Inserisci dati di prova all'avvio (12 tavoli + 10 piatti)
+  [ ] Prova: avvia il server, apri H2 console e vedi i dati
+
+FASE 2 — Tavoli (giorno 2-3)
+  [ ] GET /api/tavoli → lista 12 tavoli con stato calcolato
+  [ ] Scrivi la funzione calcolaStato(tavolo)
+  [ ] PUT /api/tavoli/{id}/non-disponibile → cambia true/false
+  [ ] Prova con il frontend tavoli.html (o Postman)
+
+FASE 3 — Ordini (giorno 3-4)
+  [ ] POST /api/ordini → crea ordine APERTO su tavolo libero
+  [ ] POST /api/ordini/{id}/righe → aggiunge piatto all'ordine
+  [ ] Ricalcola totale ordine dopo ogni riga aggiunta
+  [ ] PUT /api/ordini/{id}/in-cucina → cambia stato
+  [ ] PUT /api/ordini/{id}/paga → cambia stato + metti pagato_il = adesso
+  [ ] GET /api/ordini?attivi=true → lista ordini aperti
+
+FASE 4 — Menu (giorno 4)
+  [ ] GET /api/piatti
+  [ ] POST /api/piatti (nome + prezzo)
+  [ ] PUT /api/piatti/{id}
+  [ ] DELETE /api/piatti/{id} → metti disponibile = false
+
+FASE 5 — Prenotazioni (giorno 5)
+  [ ] GET /api/prenotazioni?oggi=true
+  [ ] POST /api/prenotazioni
+  [ ] DELETE /api/prenotazioni/{id} → cancellata = true
+
+FASE 6 — Dashboard (giorno 5-6)
+  [ ] GET /api/dashboard → unisce tutti i conteggi
+  [ ] Collega index.html (il frontend legge i dati e aggiorna KPI e piantina)
+
+FASE 7 — Test finale (giorno 7)
+  [ ] Flusso completo: apri tavolo → ordine → cucina → paga
+  [ ] Aggiungi prenotazione
+  [ ] Aggiungi piatto al menu
+  [ ] Verifica che la Dashboard si aggiorna
+
+
+================================================================================
+  PARTE 4 — STRUTTURA JAVA SEMPLICE (senza complicazioni)
+================================================================================
+
+Organizza il codice cosi (cartelle standard Spring Boot):
+
+  entity/       → le 5 classi Tavolo, Piatto, Ordine, RigaOrdine, Prenotazione
+  repository/   → TavoloRepository, PiattoRepository, ecc. (interfacce vuote)
+  service/      → la LOGICA (conteggi, calcolo stato, crea ordine...)
+  controller/   → riceve le richieste HTTP e chiama il service
+
+REGOLA: il Controller NON fa calcoli. Scrive solo:
+  "Ho ricevuto la richiesta → chiamo il Service → restituisco la risposta"
+
+Esempio Controller minimale:
+
+  @RestController
+  @RequestMapping("/api")
+  public class DashboardController {
+
+      @Autowired
+      DashboardService dashboardService;
+
+      @GetMapping("/dashboard")
+      public DashboardResponse getDashboard() {
+          return dashboardService.getRiepilogo();
+      }
+  }
+
+Esempio Service (logica incasso):
+
+  public double calcolaIncassoOggi() {
+      List<Ordine> lista = ordineRepository.findByStato("PAGATO");
+      double somma = 0;
+      LocalDate oggi = LocalDate.now();
+      for (Ordine o : lista) {
+          if (o.getPagatoIl() != null && o.getPagatoIl().toLocalDate().equals(oggi)) {
+              somma = somma + o.getTotale();
+          }
+      }
+      return somma;
+  }
+
+
+================================================================================
+  PARTE 5 — COSA NON FARE (per restare semplici)
+================================================================================
+
+  X Login e password
+  X Spring Security
+  X WebSocket / aggiornamento automatico
+  X Confronto incasso con ieri
+  X Notifiche
+  X Attivita recenti
+  X Piu sale (Terrazza, ecc.)
+  X Stati ordine extra (Pronto, Servito, Annullato...)
+  X Pattern complicati (DDD, microservizi, eventi...)
+
+  OK Usare for loop e if semplici
+  OK Un Service per area (TavoloService, OrdineService...)
+  OK Ricaricare la pagina dopo ogni azione (gia fatto nel frontend)
+  OK H2 database per iniziare
+  OK Chiedere aiuto se un passo non e chiaro
+
+
+================================================================================
+  PARTE 6 — FLUSSO COMPLETO DA CAPIRE (esempio pratico)
+================================================================================
+
+Scenario: cliente si siede al tavolo 3.
+
+1. Cameriere clicca Tavolo 3 (verde) → "Apri ordine"
+   Java: crea Ordine(stato=APERTO, tavolo_id=3, totale=0)
+   Tavolo 3 diventa ROSSO
+
+2. Cameriere aggiunge 2 Pizza Margherita
+   Java: crea 2 RigaOrdine, aggiorna totale ordine = 16.00
+
+3. Cameriere clicca "Invia in cucina"
+   Java: ordine.stato = IN_CUCINA
+
+4. Cameriere clicca "Paga conto"
+   Java: ordine.stato = PAGATO, pagato_il = adesso
+   Tavolo 3 torna VERDE
+   Card "Incasso oggi" aumenta di 16.00
+
+
+================================================================================
+  PARTE 7 — COLLEGAMENTO CON IL FRONTEND (collega HTML)
+================================================================================
+
+Il frontend e gia pronto in dashboard/js/api.js
+
+Quando Java risponde, il browser aggiorna la pagina.
+
+IMPORTANTE per Java — abilita CORS (altrimenti il browser blocca):
+
+  Aggiungi una classe config con @CrossOrigin o WebMvcConfigurer
+  che permette richieste da qualsiasi origine (solo per sviluppo).
+
+URL base che il frontend usa: http://localhost:8080/api
+
+Endpoint che DEVI implementare (checklist):
+
+  [ ] GET  /api/dashboard
+  [ ] GET  /api/tavoli
+  [ ] GET  /api/tavoli/{id}
+  [ ] PUT  /api/tavoli/{id}/non-disponibile
+  [ ] GET  /api/ordini?attivi=true
+  [ ] GET  /api/ordini/{id}
+  [ ] POST /api/ordini
+  [ ] POST /api/ordini/{id}/righe
+  [ ] PUT  /api/ordini/{id}/in-cucina
+  [ ] PUT  /api/ordini/{id}/paga
+  [ ] GET  /api/piatti
+  [ ] POST /api/piatti
+  [ ] PUT  /api/piatti/{id}
+  [ ] DELETE /api/piatti/{id}
+  [ ] GET  /api/prenotazioni?oggi=true
+  [ ] POST /api/prenotazioni
+  [ ] DELETE /api/prenotazioni/{id}
+
+
+================================================================================
+  PARTE 8 — SE TI BLOCHI
+================================================================================
+
+1. Il server non parte?
+   → Controlla errori in console, spesso manca una dipendenza in pom.xml
+
+2. Il frontend non vede i dati?
+   → Apri http://localhost:8080/api/tavoli nel browser
+   → Se vedi JSON, Java funziona. Se no, il problema e Java.
+   → Se Java funziona ma la pagina no, e CORS.
+
+3. I colori tavoli sono sbagliati?
+   → Controlla la funzione calcolaStato() — stampa con System.out.println
+
+4. Il totale ordine e sbagliato?
+   → Dopo ogni riga aggiunta, ricalcola: somma (quantita * prezzo) di tutte le righe
+
+5. Non capisci un concetto?
+   → Spring "Repository" = modo facile per fare SELECT/INSERT senza scrivere SQL
+   → "@RestController" = questa classe risponde alle richieste del browser
+   → "Entity" = classe che corrisponde a una tabella del database
+
+
+================================================================================
+  FINE ROADMAP — Inizia dalla FASE 1 e vai avanti un passo alla volta.
+  Documento di riferimento: docs/MVP-PIANO.md (dettagli tecnici)
+  Frontend gia pronto: cartella dashboard/
+================================================================================
