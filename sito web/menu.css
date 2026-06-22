@@ -1,0 +1,196 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    /* Immagine di sfondo: un tavolo di legno rustico */
+    background-image: linear-gradient(rgba(0, 0, 0, 0.15), rgba(0, 0, 0, 0.15)), 
+                      url('https://pngtree.com/freebackground/top-view-of-vintage-dark-wooden-table-texture_13419531.html');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed; /* Mantiene lo sfondo fermo mentre si sfoglia */
+    
+    font-family: 'Cormorant Garamond', serif;
+    color: #2b2520;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 20px;
+}
+
+/* Contenitore Principale del Libro */
+.book-container {
+    background-color: #fbf5ee;
+    max-width: 550px;
+    width: 100%;
+    min-height: 600px; /* Altezza fissa ideale per non far saltare i bottoni quando cambi pagina */
+    padding: 40px;
+    border: 1px solid #d3c2b0;
+    box-shadow: 0 12px 40px rgba(0,0,0,0.1);
+    position: relative;
+    border-radius: 4px;
+}
+
+/* Linea decorativa rossa laterale (effetto rilegatura a sinistra) */
+.book-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 15px;
+    bottom: 0;
+    width: 2px;
+    background-color: rgba(166, 43, 31, 0.25);
+}
+
+/* Gestione delle Pagine */
+.menu-page {
+    display: none;
+    height: 100%;
+    flex-direction: column;
+}
+
+.menu-page.active {
+    display: flex;
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateX(8px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+
+/* --- ELEMENTI DEL MENU --- */
+.menu-header {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 35px;
+}
+
+.logo-cerchio {
+    border: 1px dashed #a62b1f;
+    border-radius: 50%;
+    padding: 15px;
+    text-align: center;
+    width: 140px;
+    height: 140px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.logo-titolo {
+    font-family: 'Alex Brush', cursive;
+    font-size: 1.8rem;
+    color: #a62b1f;
+}
+
+.logo-sub {
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #6b5b52;
+}
+
+.menu-section {
+    margin-bottom: 20px;
+}
+
+.section-title {
+    font-family: 'Alex Brush', cursive;
+    font-size: 2.4rem;
+    color: #a62b1f;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #d3c2b0;
+    padding-bottom: 5px;
+}
+
+.menu-item {
+    margin-bottom: 14px;
+}
+
+.item-main {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    font-size: 1.2rem;
+}
+
+.item-price {
+    font-weight: 700;
+}
+
+.wine-producer {
+    font-size: 0.95rem;
+    font-weight: 700;
+    margin-top: 15px;
+    margin-bottom: 5px;
+    color: #1a1a1a;
+    text-transform: uppercase;
+}
+
+.item-name-wine {
+    font-style: italic;
+    padding-left: 5px;
+    color: #555;
+}
+
+.coperto {
+    margin-top: 15px;
+    font-style: italic;
+    font-size: 0.95rem;
+    color: #6b5b52;
+    text-align: right;
+}
+
+.page-number {
+    text-align: center;
+    font-size: 0.85rem;
+    color: #8c7a6b;
+    margin-top: auto; /* Spinge il numero di pagina sempre in fondo */
+    padding-top: 20px;
+}
+
+/* --- PULSANTI DI NAVIGAZIONE --- */
+.nav-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: #a62b1f;
+    color: white;
+    border: none;
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    font-size: 1.3rem;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    transition: all 0.2s ease;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10;
+}
+
+.nav-btn:hover {
+    background-color: #cd3d2e;
+    transform: translateY(-50%) scale(1.1);
+}
+
+.prev-btn { left: -21px; }
+.next-btn { right: -21px; }
+
+/* Ottimizzazione Mobile */
+@media (max-width: 600px) {
+    .nav-btn {
+        top: auto;
+        bottom: -25px;
+        transform: none;
+    }
+    .nav-btn:hover { transform: scale(1.1); }
+    .prev-btn { left: 25%; }
+    .next-btn { right: 25%; }
+    .book-container { padding: 25px; min-height: 520px; }
+}
