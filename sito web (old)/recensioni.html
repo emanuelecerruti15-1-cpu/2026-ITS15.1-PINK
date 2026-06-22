@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dicono di noi - Trattoria A Réva</title>
+    <link rel="stylesheet" href="recensioni.css">
+</head>
+<body>
+    <div class="reviews-container"> 
+        <a href="index.html" class="btn-back-home">&larr; Torna alla Home</a>
+
+        <h2>Dicono di noi</h2>
+        <p class="subtitle">Trattoria A Réva — Le esperienze dei nostri ospiti</p>
+        
+        <div class="reviews-summary">
+            <div class="rating-huge">
+                <div class="number">4.8</div>
+                <div class="stars">★★★★★</div>
+                <div style="font-size: 0.8rem; color: var(--text-light); margin-top: 5px;">Su 148 recensioni</div>
+            </div>
+            <div class="rating-bars">
+                <div class="bar-item">
+                    <span>5 ★</span>
+                    <div class="bar-bg"><div class="bar-fill" style="width: 85%;"></div></div>
+                    <span>85%</span>
+                </div>
+                <div class="bar-item">
+                    <span>4 ★</span>
+                    <div class="bar-bg"><div class="bar-fill" style="width: 12%;"></div></div>
+                    <span>12%</span>
+                </div>
+                <div class="bar-item">
+                    <span>3 ★</span>
+                    <div class="bar-bg"><div class="bar-fill" style="width: 3%;"></div></div>
+                    <span>3%</span>
+                </div>
+                <div class="bar-item">
+                    <span>2 ★</span>
+                    <div class="bar-bg"><div class="bar-fill" style="width: 0%;"></div></div>
+                    <span>0%</span>
+                </div>
+                <div class="bar-item">
+                    <span>1 ★</span>
+                    <div class="bar-bg"><div class="bar-fill" style="width: 0%;"></div></div>
+                    <span>0%</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="reviews-list" id="lista-recensioni"></div>
+
+        <div class="add-review-section">
+            <h3>Lascia la tua recensione</h3>
+            
+            <form id="form-recensione">
+                <div class="form-group">
+                    <label for="review-name">Nome e Cognome</label>
+                    <input type="text" id="review-name" required placeholder="Es. Mario Rossi">
+                </div>
+
+                <div class="form-group">
+                    <label for="review-rating">Valutazione</label>
+                    <select id="review-rating" required>
+                        <option value="5">5 Stelle (Eccellente)</option>
+                        <option value="4">4 Stelle (Molto Buono)</option>
+                        <option value="3">3 Stelle (Nella Media)</option>
+                        <option value="2">2 Stelle (Scarso)</option>
+                        <option value="1">1 Stella (Pessimo)</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="review-message">La tua esperienza</label>
+                    <textarea id="review-message" rows="5" required placeholder="Cosa ti è piaciuto di più dei nostri piatti?"></textarea>
+                </div>
+
+                <button type="submit">Invia Recensione</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+       
+        const recensioniPredefinite = [
+            {
+                nome: "Elena M.",
+                voto: "5",
+                testo: "Il miglior pesto di Genova scoperto per caso tra i caruggi. Le trofie erano perfette e i pansoti in salsa di noci divini. Personale gentilissimo, ci tornerò sicuramente!",
+                data: "12 Giugno 2026"
+            },
+            {
+                nome: "Francesco T.",
+                voto: "5",
+                testo: "Frittura di paranza leggerissima e croccante. Atmosfera autentica che ti fa respirare la vera tradizione ligure. Ottimo rapporto qualità prezzo.",
+                data: "4 Maggio 2026"
+            },
+            {
+                nome: "Matteo R.",
+                voto: "4",
+                testo: "Farinata eccezionale appena sfornata. Consiglio caldamente di prenotare perché il locale è piccolino ma merita assolutamente.",
+                data: "18 Aprile 2026"
+            }
+        ];
+
+        const listaDOM = document.getElementById('lista-recensioni');
+
+        
+        function renderizzaRecensione(review, inCima = false) {
+            const votoNum = parseInt(review.voto);
+            const stelle = '★'.repeat(votoNum) + '☆'.repeat(5 - votoNum);
+            
+            const card = document.createElement('div');
+            card.className = 'review-card';
+            card.innerHTML = `
+                <div class="review-header">
+                    <span class="reviewer-name">${review.nome}</span>
+                    <span class="review-stars">${stelle}</span>
+                </div>
+                <p class="review-text">${review.testo}</p>
+                <span class="review-date">${review.data}</span>
+            `;
+
+            if (inCima) {
+                listaDOM.insertBefore(card, listaDOM.firstChild);
+            } else {
+                listaDOM.appendChild(card);
+            }
+        }
+
+        
+        function caricaRecensioni() {
+            const locali = localStorage.getItem('trattoria_reviews');
+            if (locali) {
+                const recensioniSalvate = JSON.parse(locali);
+                recensioniSalvate.forEach(r => renderizzaRecensione(r));
+            } else {
+              
+                recensioniPredefinite.forEach(r => renderizzaRecensione(r));
+                localStorage.setItem('trattoria_reviews', JSON.stringify(recensioniPredefinite));
+            }
+        }
+
+        
+        document.getElementById('form-recensione').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const nome = document.getElementById('review-name').value;
+            const voto = document.getElementById('review-rating').value;
+            const testo = document.getElementById('review-message').value;
+
+            const oggi = new Date();
+            const opzioniData = { year: 'numeric', month: 'long', day: 'numeric' };
+            const data = oggi.toLocaleDateString('it-IT', opzioniData);
+
+            const nuovaRecensione = { nome, voto, testo, data };
+
+           
+            const recensioniAttuali = JSON.parse(localStorage.getItem('trattoria_reviews')) || [];
+            recensioniAttuali.unshift(nuovaRecensione); 
+            localStorage.setItem('trattoria_reviews', JSON.stringify(recensioniAttuali));
+
+           
+            renderizzaRecensione(nuovaRecensione, true);
+
+            alert("Grazie! La tua recensione è stata salvata e pubblicata.");
+            this.reset();
+        });
+
+        
+        caricaRecensioni();
+    </script>
+</body>
+</html>
