@@ -38,7 +38,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['azione']) && $_POST['a
 }
 
 // Funzione di supporto per rispondere velocemente in JSON alle chiamate AJAX
-function json_serialize_response($stato, $nome="", $voto=5, $testo="", $data="") {
+function json_serialize_response($stato="", $nome="", $voto=5, $testo="", $data="") {
     return json_encode([
         "stato" => $stato,
         "nome" => $nome,
@@ -80,6 +80,31 @@ if ($res && $res->num_rows > 0) {
         ]
     ];
 }
+
+function getTotaleRecensioni($conn) {
+    $sql = "SELECT COUNT(*) as totale FROM feedback";
+    $res = $conn->query($sql);
+    if ($res && $row = $res->fetch_assoc()) {
+        return $row['totale'];
+    }
+    return 0;
+}
+
+function calcolaPercentualeStella($conn, $stella, $totaleRecensioni) {
+    if ($totaleRecensioni == 0) return 0;
+
+    // Contiamo quante recensioni hanno quel voto specifico
+    $sql = "SELECT COUNT(*) as totale_stella FROM feedback WHERE voto = $stella";
+    $res = $conn->query($sql);
+    
+    if ($res && $row = $res->fetch_assoc()) {
+        $quantiVoti = $row['totale_stella'];
+        // Formula della percentuale: (voti specifici / voti totali) * 100
+        $percentuale = ($quantiVoti / $totaleRecensioni) * 100;
+        return round($percentuale); // Arrotonda il numero (es. 45% invece di 44.82%)
+    }
+    return 0;
+}
 ?>
 <!DOCTYPE html>
 <html lang="it">
@@ -102,37 +127,44 @@ if ($res && $res->num_rows > 0) {
                 <div class="stars">★★★★★</div>
                 <div style="font-size: 0.8rem; color: var(--text-light); margin-top: 5px;">Su 148 recensioni</div>
             </div>
+
+
+            <?php
+                $totaleRecensioni = getTotaleRecensioni($conn);
+            ?>
             <div class="rating-bars">
                 <div class="bar-item">
                     <span>5 ★</span>
-                    <div class="bar-bg"><div class="bar-fill" style="width: 85%;"></div></div>
-                    <span>85%</span>
+                    <?php $percentuale5Stelle = calcolaPercentualeStella($conn, 5, $totaleRecensioni)?>
+                    <div class="bar-bg"><div class="bar-fill" style="width: <?php echo $percentuale5Stelle ?>"></div></div>
+                    <span><?php echo $percentuale5Stelle; ?>%</span>
                 </div>
                 <div class="bar-item">
                     <span>4 ★</span>
-                    <div class="bar-bg"><div class="bar-fill" style="width: 12%;"></div></div>
-                    <span>12%</span>
+                    <?php $percentuale4Stelle = calcolaPercentualeStella($conn, 4, $totaleRecensioni)?>
+                    <div class="bar-bg"><div class="bar-fill" style="width: <?php echo $percentuale4Stelle ?>"></div></div>
+                    <span><?php echo $percentuale4Stelle; ?>%</span>
                 </div>
                 <div class="bar-item">
                     <span>3 ★</span>
-                    <div class="bar-bg"><div class="bar-fill" style="width: 3%;"></div></div>
-                    <span>3%</span>
+                    <?php $percentuale3Stelle = calcolaPercentualeStella($conn, 3, $totaleRecensioni)?>
+                    <div class="bar-bg"><div class="bar-fill" style="width: <?php echo $percentuale3Stelle ?>"></div></div>
+                    <span><?php echo $percentuale3Stelle; ?>%</span>
                 </div>
                 <div class="bar-item">
                     <span>2 ★</span>
-                    <div class="bar-bg"><div class="bar-fill" style="width: 0%;"></div></div>
-                    <span>0%</span>
+                    <?php $percentuale2Stelle = calcolaPercentualeStella($conn, 2, $totaleRecensioni)?>
+                    <div class="bar-bg"><div class="bar-fill" style="width: <?php echo $percentuale2Stelle ?>"></div></div>
+                    <span><?php echo $percentuale2Stelle; ?>%</span>
                 </div>
                 <div class="bar-item">
                     <span>1 ★</span>
-                    <div class="bar-bg"><div class="bar-fill" style="width: 0%;"></div></div>
-                    <span>0%</span>
+                    <?php $percentuale1Stelle = calcolaPercentualeStella($conn, 1, $totaleRecensioni)?>
+                    <div class="bar-bg"><div class="bar-fill" style="width: <?php echo $percentuale1Stelle ?>"></div></div>
+                    <span><?php echo $percentuale1Stelle; ?>%</span>
                 </div>
             </div>
         </div>
-
-        <!-- Qui verranno stampate le recensioni caricate dinamicamente dal PHP -->
-        <div class="reviews-list" id="lista-recensioni"></div>
 
         <div class="add-review-section">
             <h3>Lascia la tua recensione</h3>
@@ -162,7 +194,14 @@ if ($res && $res->num_rows > 0) {
                 <button type="submit">Invia Recensione</button>
             </form>
         </div>
+
+        <br>
+        <br>
+        <h3>Recensioni</h3>
+        <!-- caricamento recensioni dal PHP -->
+        <div class="reviews-list" id="lista-recensioni"></div>
     </div>
+
 
     <script>
         // Passiamo l'array generato dal PHP direttamente a JavaScript in modo pulito e sicuro
@@ -181,7 +220,7 @@ if ($res && $res->num_rows > 0) {
                     <span class="reviewer-name">${escapeHTML(review.nome)}</span>
                     <span class="review-stars">${stelle}</span>
                 </div>
-                <p class="review-text">${escapeHTML(review.testo)}</p>
+                <p class="review-text">${escapeHTML(review.commento)}</p>
                 <span class="review-date">${escapeHTML(review.data)}</span>
             `;
 
@@ -192,9 +231,14 @@ if ($res && $res->num_rows > 0) {
             }
         }
 
-        // Helper per evitare attacchi XSS stampando testi scritti dagli utenti
         function escapeHTML(str) {
-            return str.replace(/[&<>'"]/g, 
+            // Se il valore è null, undefined o non è una stringa, restituisce una stringa vuota
+            if (str === null || str === undefined) {
+                return "";
+            }
+            
+            // Forza il valore a essere trattato come stringa per sicurezza
+            return String(str).replace(/[&<>'"]/g, 
                 tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)
             );
         }
@@ -222,7 +266,7 @@ if ($res && $res->num_rows > 0) {
                     const nuovaRecensione = {
                         nome: data.nome,
                         voto: data.voto,
-                        testo: data.testo,
+                        testo: data.commento,
                         data: data.data
                     };
                     
@@ -240,8 +284,10 @@ if ($res && $res->num_rows > 0) {
             });
         });
 
-        // Avvia la renderizzazione al caricamento
-        inizializzaPagina();
+
+        document.addEventListener('DOMContentLoaded', () => {
+            inizializzaPagina();
+        });
     </script>
 </body>
 </html>
