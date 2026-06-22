@@ -1,0 +1,274 @@
+/* PALETTE E CONFIGURAZIONE - STILE PULITO, GEOMETRICO ED ELEGANTE */
+:root {
+    --vino: #722F37;           /* Rosso Vino */
+    --giallo: #D4AF37;         /* Oro Soft / Giallo Trattoria */
+    --nero: #1C1C1C;           /* Nero elegante per testi e contrasti */
+    --crema: #FDFBF7;          /* Sfondo Bianco Caldo/Avorio pulito */
+    --bianco: #FFFFFF;
+    --grigio-scheda: #F7F5F0;  /* Grigio/crema chiarissimo e piatto per le schede */
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Georgia', serif;
+    background-color: var(--crema);
+    color: var(--nero);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+}
+
+/* TIPOGRAFIA REGOLATA PER ALTO CONTRASTO */
+h1, h2, h3 {
+    font-weight: normal;
+    color: var(--nero);
+}
+
+/* TAG PICCOLI SOPRA I TITOLI */
+.section-tag, .menu-intro .subtitle, .storia-tag {
+    font-family: 'Arial', sans-serif;
+    font-size: 0.7rem;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    font-weight: bold;
+    display: block;
+    margin-bottom: 15px;
+}
+
+.section-tag { color: var(--giallo); }
+.menu-intro .subtitle { color: var(--giallo); }
+.storia-generazioni .storia-tag { color: var(--giallo); }
+
+/* LINK DI NAVIGAZIONE E SCOPRI */
+.link-more, .storia-link, .link-completo, .link-scopri {
+    font-family: 'Arial', sans-serif;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-weight: bold;
+    text-decoration: none;
+    display: inline-block;
+    padding-bottom: 4px;
+    transition: all 0.3s ease;
+}
+
+.link-more { color: var(--giallo); border-bottom: 1px solid var(--giallo); }
+.link-completo { color: var(--nero); border-bottom: 1px solid var(--giallo); }
+.link-scopri { color: var(--nero); border-bottom: 1px solid transparent; }
+.link-scopri:hover { color: var(--vino); border-bottom-color: var(--vino); }
+
+/* 1. HERO SECTION */
+.hero-section {
+    display: flex;
+    height: 100vh;
+    background-color: var(--crema);
+}
+
+.hero-left {
+    width: 45%; 
+    padding: 60px 6% 60px 8%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    background-color: var(--crema);
+    z-index: 2;
+    clip-path: none; 
+    margin-right: 0; 
+}
+
+.hero-brand { font-size: 0.75rem; letter-spacing: 5px; font-family: 'Arial', sans-serif; color: var(--giallo); font-weight: bold; }
+.hero-logo { font-size: 3.2rem; letter-spacing: 1px; color: var(--vino); margin: 10px 0; font-family: 'Georgia', serif; }
+.hero-sublogo { font-size: 0.7rem; letter-spacing: 4px; color: var(--nero); font-family: 'Arial', sans-serif; opacity: 0.8; }
+.hero-divider { color: var(--giallo); margin: 20px 0; font-size: 1.8rem; }
+.hero-title { font-size: 3.8rem; line-height: 1.15; margin-bottom: 30px; color: var(--nero); }
+.hero-description { font-size: 1rem; color: #555; max-width: 380px; line-height: 1.7; }
+
+.btn-dark {
+    display: inline-block;
+    background-color: transparent;
+    color: var(--nero);
+    padding: 12px 0;
+    text-decoration: none;
+    font-family: 'Arial', sans-serif;
+    font-size: 0.75rem;
+    letter-spacing: 2px;
+    font-weight: bold;
+    border-bottom: 1px solid var(--giallo);
+    margin-top: 40px;
+    align-self: flex-start;
+    transition: color 0.3s;
+}
+.btn-dark:hover { color: var(--vino); border-bottom-color: var(--vino); }
+
+.hero-right {
+    width: 55%; 
+    height: 100%;
+}
+.hero-main-img { width: 100%; height: 100%; object-fit: cover; }
+
+
+/* 2. SEZIONE CENTRALE A TRE COLONNE */
+.storia-generazioni {
+    display: flex;
+    width: 100%;
+    height: 65vh; 
+    min-height: 500px;
+    background-color: var(--vino);
+}
+
+.storia-col {
+    flex: 1; 
+    height: 100%;
+}
+.storia-col img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+.col-testo-centro {
+    background-color: var(--vino);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 6%;
+}
+.testo-content { max-width: 340px; }
+.testo-content h2 {
+    font-family: 'Georgia', serif;
+    font-size: 2.2rem;
+    color: var(--bianco);
+    line-height: 1.25;
+    margin-bottom: 20px;
+}
+.storia-line {
+    width: 40px;
+    height: 1px;
+    background-color: var(--giallo);
+    margin-bottom: 25px;
+}
+.testo-content p {
+    font-size: 0.95rem;
+    color: var(--crema);
+    line-height: 1.7;
+    margin-bottom: 35px;
+    opacity: 0.9;
+}
+.storia-link { color: var(--bianco); border-bottom: 1px solid var(--giallo); }
+.storia-link:hover { color: var(--giallo); }
+
+
+/* 3. SEZIONE STORIA E TRADIZIONE (MODIFICATA PER CREARE SEPARAZIONE) */
+.storia-tradizione-section {
+    display: flex;
+    padding: 100px 6%;
+    background-color: #1A1A1A; /* Sfondo scuro tipo lavagna per staccare dal resto della pagina */
+    gap: 6%;
+    border-top: 4px solid var(--vino);
+    border-bottom: 4px solid var(--vino);
+}
+
+.storia-block { width: 30%; }
+.storia-block h2 { font-size: 2.4rem; line-height: 1.25; margin: 20px 0; color: var(--crema); }
+.storia-block p { color: #CCCCCC; font-size: 0.95rem; line-height: 1.7; }
+.storia-block .link-more:hover { color: var(--bianco); border-bottom-color: var(--bianco); }
+
+.tradizione-block { width: 64%; }
+.section-title-container { margin-bottom: 40px; }
+.icon-wave { color: var(--vino); font-size: 1.8rem; }
+
+.piatti-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 25px;
+}
+.piatto-card {
+    background-color: var(--crema); /* Card chiare che escono fuori dallo sfondo nero */
+    padding: 0 0 25px 0; 
+    text-align: center;
+    border: 2px solid var(--vino);
+    box-shadow: 8px 8px 0px #000000; /* Ombra netta e geometrica */
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.piatto-card:hover {
+    transform: translate(-4px, -4px);
+    box-shadow: 12px 12px 0px var(--vino);
+}
+.piatto-card img {
+    width: 100%;
+    height: 220px;
+    object-fit: cover;
+    margin-bottom: 20px;
+    border-bottom: 2px solid var(--vino);
+}
+.piatto-card h3 { font-size: 1.2rem; margin: 0 15px 8px 15px; color: var(--nero); font-weight: bold; }
+.piatto-card p { font-size: 0.85rem; color: #555555; font-style: italic; margin: 0 15px; }
+.card-divider { display: block; color: var(--vino); margin-top: 15px; font-size: 1.2rem; }
+
+
+/* 4. SEZIONE IL NOSTRO MENU */
+.nostro-menu {
+    background-color: var(--bianco); 
+    padding: 100px 6%;
+}
+.menu-container {
+    max-width: 1300px;
+    margin: 0 auto;
+    display: flex;
+    gap: 60px;
+}
+.menu-intro { flex: 1; max-width: 320px; }
+.menu-intro h2 { font-size: 2.4rem; color: var(--nero); margin-bottom: 15px; }
+.wave-separator path { stroke: var(--giallo); }
+.menu-intro p { font-size: 0.95rem; color: #555; margin-bottom: 30px; line-height: 1.7; }
+
+.menu-grid {
+    flex: 3;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+}
+.menu-card {
+    background-color: var(--grigio-scheda); 
+    border-radius: 0; 
+    padding: 40px 20px 30px 20px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 280px;
+    border: none;
+}
+.card-icon { margin-bottom: 20px; }
+.card-icon svg path, .card-icon svg rect, .card-icon svg circle {
+    stroke: var(--vino) !important;
+}
+.menu-card h3 { font-size: 1.2rem; color: var(--nero); margin-bottom: 12px; }
+.menu-card p { font-size: 0.85rem; color: #666; margin-bottom: 25px; line-height: 1.6; }
+
+
+/* RESPONSIVE DESIGN */
+@media (max-width: 1024px) {
+    .hero-section { flex-direction: column; height: auto; }
+    .hero-left, .hero-right { width: 100%; }
+    .hero-left { padding: 60px 4%; }
+    .hero-right { height: 50vh; }
+    
+    .storia-generazioni { flex-direction: column; height: auto; }
+    .storia-col { width: 100%; height: 380px; }
+    .col-testo-centro { padding: 60px 4%; }
+    
+    .storia-tradizione-section { flex-direction: column; gap: 40px; padding: 60px 4%; }
+    .storia-block, .tradizione-block { width: 100%; }
+    .piatti-grid { grid-template-columns: repeat(2, 1fr); }
+    
+    .menu-container { flex-direction: column; gap: 40px; }
+    .menu-intro { max-width: 100%; text-align: center; }
+    .wave-separator { margin: 0 auto; }
+    .menu-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 600px) {
+    .piatti-grid, .menu-grid { grid-template-columns: 1fr; }
+}

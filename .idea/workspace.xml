@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="1b6f103e-48aa-4464-b496-a21e3962a82b" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Frame.form" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Frame.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Menu.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Prenotazioni.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/schemi/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/RestaurantManager.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Tavoli.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/progetto-software/com/mycompany/restaurantmanager/.idea/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/progetto-software/com/mycompany/restaurantmanager/.idea/misc.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/progetto-software/com/mycompany/restaurantmanager/.idea/modules.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/progetto-software/com/mycompany/restaurantmanager/.idea/vcs.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/progetto-software/com/mycompany/restaurantmanager/Frame.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/progetto-software/com/mycompany/restaurantmanager/Menu.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/progetto-software/com/mycompany/restaurantmanager/Prenotazioni.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/progetto-software/com/mycompany/restaurantmanager/README.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/progetto-software/com/mycompany/restaurantmanager/RestaurantManager.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/progetto-software/com/mycompany/restaurantmanager/Senza titolo-2026-05-07-0856.excalidraw" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/progetto-software/com/mycompany/restaurantmanager/Tavoli.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/progetto-software/com/mycompany/restaurantmanager/database.excalidraw" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/progetto-software/com/mycompany/restaurantmanager/progetto-software.iml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/progetto-software/com/mycompany/restaurantmanager/sitoweb.excalidraw" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/sito/api.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/sito/assets/pages.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/sito/assets/style.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/sito/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/sito/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sito/menu.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/sito/menu.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/sito/ordini.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/sito/ordini.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/sito/prenotazioni.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/sito/prenotazioni.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/sito/tavoli.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/sito/tavoli.js" beforeDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;mattiagiangreco15-1-wq&quot;
+  }
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/emanuelecerruti15-1-cpu/2026-ITS15.1-PINK.git&quot;,
+    &quot;accountId&quot;: &quot;ea847767-9b63-41ec-b31f-0516704ffa9c&quot;
+  }
+}</component>
+  <component name="ProjectColorInfo">{
+  &quot;customColor&quot;: &quot;&quot;,
+  &quot;associatedIndex&quot;: 6
+}</component>
+  <component name="ProjectId" id="3FU56WFPVQdUewI1s89cV1dTOUH" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.typescript.service.memoryLimit.init&quot;: &quot;true&quot;,
+    &quot;codeWithMe.voiceChat.enabledByDefault&quot;: &quot;false&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;
+  }
+}</component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-jdk-30f59d01ecdd-37e91769500f-intellij.indexing.shared.core-IU-261.24374.151" />
+        <option value="bundled-js-predefined-d6986cc7102b-31caf2ab9e3c-JavaScript-IU-261.24374.151" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="1b6f103e-48aa-4464-b496-a21e3962a82b" name="Changes" comment="" />
+      <created>1782116637077</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1782116637077</updated>
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+</project>
