@@ -122,26 +122,18 @@ body {
     font-weight: 700;
 }
 
-.wine-producer {
-    font-size: 0.95rem;
-    font-weight: 700;
-    margin-top: 15px;
-    margin-bottom: 5px;
-    color: #1a1a1a;
-    text-transform: uppercase;
-}
 
-.item-name-wine {
-    font-style: italic;
-    padding-left: 5px;
-    color: #555;
+.item-description{
+    font-size: 0.9em;
+    color: rgb(70, 69, 69);
+    margin: 2px 0 10px 0;
 }
 
 .coperto {
     margin-top: 15px;
     font-style: italic;
-    font-size: 0.95rem;
-    color: #6b5b52;
+    font-size: 1rem;
+    color: #000000;
     text-align: right;
 }
 
@@ -155,6 +147,7 @@ body {
 
 /* --- PULSANTI DI NAVIGAZIONE --- */
 .nav-btn {
+    z-index: 999999 !important;
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
@@ -171,7 +164,6 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 10;
 }
 
 .nav-btn:hover {
@@ -179,8 +171,8 @@ body {
     transform: translateY(-50%) scale(1.1);
 }
 
-.prev-btn { left: -21px; }
-.next-btn { right: -21px; }
+.prev-btn { left: -21px; z-index: 9999; }
+.next-btn { right: -21px; z-index: 9999; }
 
 /* Ottimizzazione Mobile */
 @media (max-width: 600px) {

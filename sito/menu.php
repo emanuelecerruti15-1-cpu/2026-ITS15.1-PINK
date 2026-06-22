@@ -1,10 +1,9 @@
 <?php
-    // 1. CONNESSIONE AL DATABASE
+    // CONNESSIONE AL DATABASE
     $host = "localhost";
     $user = "root";
     $password = "";
-    $dbname = "ristorante_db"; // Ricordati di cambiarlo se il DB ha un altro nome
-
+    $dbname = "ristorante_db";
     $conn = new mysqli($host, $user, $password, $dbname);
 
     // Se la connessione fallisce, mostra l'errore
@@ -14,7 +13,14 @@
 
     // FUNZIONE PER STAMPARE I PIATTI DAL DB
     function stampaCategoria($conn, $categoria) {
-        $sql = "SELECT nome, prezzo FROM menu WHERE categoria = '$categoria' AND disponibile = 1";
+        // Se passiamo un array di categorie (utile per l'ultima pagina), usiamo l'IN di SQL
+        if (is_array($categoria)) {
+            $listaCategorie = "'" . implode("','", $categoria) . "'";
+            $sql = "SELECT nome, prezzo, descrizione FROM menu WHERE categoria IN ($listaCategorie) AND disponibile = 1";
+        } else {
+            $sql = "SELECT nome, prezzo, descrizione FROM menu WHERE categoria = '$categoria' AND disponibile = 1";
+        }
+        
         $result = $conn->query($sql);
 
         if ($result && $result->num_rows > 0) {
@@ -26,10 +32,14 @@
                 echo '        <span class="item-name">' . htmlspecialchars($row['nome']) . '</span>';
                 echo '        <span class="item-price">€ ' . $prezzoFormattato . '</span>';
                 echo '    </div>';
+                // Mostra anche la descrizione se presente nel DB
+                if (!empty($row['descrizione'])) {
+                    echo '    <p class="item-description">' . htmlspecialchars($row['descrizione']) . '</p>';
+                }
                 echo '</div>';
             }
         } else {
-            echo '<p style="color:gray; font-style:italic; padding-left: 20px;">Nessun piatto disponibile al momento.</p>';
+            echo '<p style="color:gray; font-style:italic; padding-left: 20px;"> Nessun piatto disponibile al momento.</p>';
         }
     }
 ?>
@@ -41,24 +51,12 @@
     <title>Menu a Pagine - Trattoria da Ignazio</title>
     <link rel="stylesheet" href="assets/menu.css">
     <link href="https://fonts.googleapis.com/css2?family=Alex+Brush&family=Cormorant+Garamond:ital,wght@0,500;0,700;1,400&display=swap" rel="stylesheet">
-    
-    <style>
-        /* FIX FRECCE: Forza i pulsanti di navigazione a stare sopra le pagine del menu */
-        .nav-btn {
-            z-index: 9999 !important;
-            cursor: pointer;
-            opacity: 1 !important;
-            display: block !important;
-        }
-        .book-container {
-            position: relative;
-        }
-    </style>
 </head>
 <body>
 
     <div class="book-container">
         
+        <!-- PAGINA 1: ANTIPASTI -->
         <div class="menu-page active" id="page-1">
             <header class="menu-header">
                 <div class="logo-cerchio">
@@ -69,63 +67,46 @@
             
             <section class="menu-section">
                 <h2 class="section-title">Antipasti</h2>
-                <?php stampaCategoria($conn, 'ANTIPASTO'); ?>
+                <?php stampaCategoria($conn, 'antipasti'); ?>
             </section>
             <div class="page-number">Pagina 1 di 5</div>
         </div>
 
+        <!-- PAGINA 2: PRIMI -->
         <div class="menu-page" id="page-2">
             <section class="menu-section">
                 <h2 class="section-title">Primi Piatti</h2>
-                <?php stampaCategoria($conn, 'PRIMO'); ?>
+                <?php stampaCategoria($conn, 'primi'); ?>
             </section>
             <div class="page-number">Pagina 2 di 5</div>
         </div>
 
+        <!-- PAGINA 3: SECONDI -->
         <div class="menu-page" id="page-3">
             <section class="menu-section">
                 <h2 class="section-title">Secondi Piatti</h2>
-                <?php stampaCategoria($conn, 'SECONDO'); ?>
+                <?php stampaCategoria($conn, 'secondi'); ?>
             </section>
             <div class="page-number">Pagina 3 di 5</div>
         </div>
 
+        <!-- PAGINA 4: VINI -->
         <div class="menu-page" id="page-4">
             <section class="menu-section">
                 <h2 class="section-title">I Nostri Vini</h2>
-                
-                <?php
-                $sqlVini = "SELECT nome, prezzo, note FROM menu WHERE categoria = 'VINO' AND disponibile = 1 ORDER BY note";
-                $resVini = $conn->query($sqlVini);
-                $produttoreCorrente = "";
-
-                if ($resVini && $resVini->num_rows > 0) {
-                    while($vino = $resVini->fetch_assoc()) {
-                        // Se c'è un produttore scritto nelle note e cambia rispetto al precedente, stampa il titolo del produttore
-                        if (!empty($vino['note']) && $vino['note'] !== $produttoreCorrente) {
-                            $produttoreCorrente = $vino['note'];
-                            echo '<div class="wine-producer">' . htmlspecialchars($produttoreCorrente) . '</div>';
-                        }
-                        echo '<div class="menu-item">';
-                        echo '    <div class="item-main">';
-                        echo '        <span class="item-name-wine">' . htmlspecialchars($vino['nome']) . '</span>';
-                        echo '        <span class="item-price">€ ' . number_format($vino['prezzo'], 2, ',', '.') . '</span>';
-                        echo '    </div>';
-                        echo '</div>';
-                    }
-                } else {
-                    // Fallback semplice se non ci sono vini raggruppati per nota
-                    stampaCategoria($conn, 'VINO');
-                }
-                ?>
+                <?php stampaCategoria($conn, 'vini'); ?>
             </section>
             <div class="page-number">Pagina 4 di 5</div>
         </div>
 
+        <!-- PAGINA 5: DOLCI & BEVANDE -->
         <div class="menu-page" id="page-5">
             <section class="menu-section">
                 <h2 class="section-title">Dolci & Bevande</h2>
-                <?php stampaCategoria($conn, 'DOLCE_BEVANDA'); ?>
+                <?php 
+                // Passiamo un array così la funzione cerca sia i dolci che le bevande insieme
+                stampaCategoria($conn, ['dolci', 'bevande']); 
+                ?>
             </section>
 
             <div class="coperto">
