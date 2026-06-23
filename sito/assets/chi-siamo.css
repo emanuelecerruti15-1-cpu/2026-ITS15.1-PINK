@@ -1,0 +1,192 @@
+/* ==========================================
+   Reset e Regole Base
+   ========================================== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Georgia', serif;
+    background-color: #fdfbf7; /* Crema caldo */
+    color: #333333;
+    line-height: 1.8;
+}
+
+.container {
+    width: 90%;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+/* ==========================================
+   Hero Section
+   ========================================== */
+.hero {
+    background: linear-gradient(rgba(0, 0, 0, 0.45), rgba(0, 0, 0, 0.45)), 
+                url('https://images.unsplash.com/photo-1541532713592-79a0317b6b77?q=80&w=1500&auto=format&fit=crop') no-repeat center center/cover;
+    height: 380px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    color: #ffffff;
+    margin-bottom: 60px;
+}
+
+.hero-content h2 {
+    font-size: 36pt;
+    margin-bottom: 12px;
+    text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.6);
+}
+
+.hero-content p {
+    font-size: 14pt;
+    font-style: italic;
+    text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.6);
+}
+
+/* ==========================================
+   Griglia "Chi Siamo" (Layout Alternato)
+   ========================================== */
+.about-section {
+    padding: 40px 0;
+}
+
+.grid-layout {
+    display: flex;
+    gap: 60px;
+    margin-bottom: 70px;
+    align-items: center;
+}
+
+/* Inverte l'ordine di testo e immagine per i blocchi pari (2°, 4°, ecc.) */
+.grid-layout:nth-child(even) {
+    flex-direction: row-reverse;
+}
+
+.text-column {
+    flex: 1;
+}
+
+.image-column {
+    flex: 1;
+}
+
+.image-placeholder {
+    width: 100%;
+    height: 400px;
+    background-color: #e6dfd3;
+    border-radius: 6px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+    border: 1px solid #d3c9b8;
+    background-size: cover;
+    background-position: center;
+}
+
+/* Titoli e Paragrafi */
+h3 {
+    font-size: 22pt;
+    color: #1e4620; /* Verde Basilico */
+    margin-bottom: 20px;
+    position: relative;
+    padding-left: 15px;
+    border-left: 4px solid #b3541e; /* Dettaglio Terracotta */
+}
+
+p {
+    margin-bottom: 20px;
+    color: #444444;
+    font-size: 12pt;
+    text-align: justify;
+}
+
+p strong {
+    color: #1e4620;
+}
+
+/* ==========================================
+   Banner dei Valori (Capisaldi)
+   ========================================== */
+.values-banner {
+    background-color: #f1ede4;
+    padding: 60px 0;
+    margin-top: 40px;
+    border-top: 1px solid #e6dfd3;
+    border-bottom: 1px solid #e6dfd3;
+    text-align: center;
+}
+
+.values-banner h3 {
+    border-left: none;
+    padding-left: 0;
+    display: inline-block;
+    margin-bottom: 40px;
+}
+
+.values-grid {
+    display: flex;
+    justify-content: space-between;
+    gap: 30px;
+}
+
+.value-card {
+    flex: 1;
+    background: #ffffff;
+    padding: 40px 25px;
+    border-radius: 4px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+    border-bottom: 4px solid #1e4620; /* Linea verde sul fondo del box */
+    transition: transform 0.3s ease;
+}
+
+.value-card:hover {
+    transform: translateY(-5px);
+}
+
+.value-card h4 {
+    font-size: 13pt;
+    color: #b3541e; /* Terracotta */
+    margin-bottom: 15px;
+    text-transform: uppercase;
+    font-family: 'Arial', sans-serif;
+    letter-spacing: 1px;
+}
+
+.value-card p {
+    font-size: 11pt;
+    text-align: center;
+    color: #555555;
+    margin-bottom: 0;
+}
+
+/* ==========================================
+   Responsive (Mobile & Tablet)
+   ========================================== */
+@media (max-width: 900px) {
+    .grid-layout, 
+    .grid-layout:nth-child(even) {
+        flex-direction: column;
+        gap: 30px;
+        margin-bottom: 50px;
+    }
+
+    .image-placeholder {
+        height: 300px;
+    }
+
+    .values-grid {
+        flex-direction: column;
+        gap: 25px;
+    }
+
+    .hero-content h2 {
+        font-size: 26pt;
+    }
+    
+    .hero-content p {
+        font-size: 12pt;
+    }
+}

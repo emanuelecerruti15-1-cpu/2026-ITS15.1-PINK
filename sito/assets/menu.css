@@ -21,6 +21,28 @@ body {
     padding: 20px;
 }
 
+
+.back-home-btn {
+    position: absolute;
+    top: 24px;
+    left: 24px;
+    display: inline;
+    color: #3182ce;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 0.95rem;
+    padding: 0;
+    border: none;
+    background: none;
+    margin: 0;
+}
+
+.back-home-btn:hover {
+    text-decoration: underline;
+    color: #255a9c;
+}
+
+
 /* Contenitore Principale del Libro */
 .book-container {
     background-color: #fbf5ee;

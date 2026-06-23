@@ -55,7 +55,7 @@
 <body>
 
     <div class="book-container">
-        
+        <a href="index.html" class="back-home-btn">← Torna alla Home</a>
         <!-- PAGINA 1: ANTIPASTI -->
         <div class="menu-page active" id="page-1">
             <header class="menu-header">
