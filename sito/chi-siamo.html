@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chi Siamo - Trattoria Genovese "A Reva"</title>
+    <link rel="stylesheet" href="chi-siamo.css">
+</head>
+<body>
+    
+    <!-- Header caricato dinamicamente -->
+    <div id="header-placeholder"></div>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <h2>Tradizione e Passione Genovese</h2>
+            <p>Dal mortaio alla tavola, la storia dei sapori autentici della nostra terra.</p>
+        </div>
+    </section>
+
+    <!-- Contenuto Principale -->
+    <main class="container about-section" id="chisiamo">
+        
+        <!-- Blocco 1: La Nostra Storia -->
+        <div class="grid-layout">
+            <div class="text-column">
+                <h3>La Nostra Storia</h3>
+                <p>Nel cuore dei caruggi più autentici, la Trattoria <strong>"A Reva"</strong> nasce dal desiderio di custodire e tramandare le ricette genuine della cucina ligure. Il nome, che nell'antico dialetto richiama la riva, il punto di incontro tra il mare e i borghi, rappresenta perfettamente la nostra filosofia culinaria: un connubio tra i frutti del Mar Ligure e i profumi intensi dell'entroterra.</p>
+                <p>Fondata negli anni '70 come piccola vineria con cucina, oggi "A Reva" è un punto di riferimento per chiunque cerchi il sapore autentico della Genova di una volta, dove il tempo sembra essersi fermato e ogni piatto racconta una tradizione secolare.</p>
+            </div>
+            <div class="image-column">
+                <div class="image-placeholder" style="background-image: url('https://images.unsplash.com/photo-1555396273-367ea4eb4db5?q=80&w=600&auto=format&fit=crop');"></div>
+            </div>
+        </div>
+
+        <!-- Blocco 2: La Cucina del Mortaio -->
+        <div class="grid-layout">
+            <div class="text-column">
+                <h3>L'Arte del Mortaio e della Tradizione</h3>
+                <p>Da "A Reva", il pesto non conosce scorciatoie moderne. Ogni giorno selezioniamo rigorosamente il basilico genovese DOP di Prà, i pinoli nazionali, l'aglio di Vessalico e l'olio extravergine delle nostre colline, lavorando il tutto rigorosamente al mortaio di marmo con pestello di legno.</p>
+                <p>Oltre al nostro celeberrimo pesto fresco servito con i classici <em>mandilli de sea</em> o le trofie fatte a mano, la nostra cucina propone i grandi classici della tradizione: dai pansotti fatti in casa con il tocco di noci, allo stoccafisso accomodato, fino alla cima alla genovese preparata secondo l'antica ricetta di famiglia.</p>
+            </div>
+            <div class="image-column">
+                <div class="image-placeholder" style="background-image: url('https://images.unsplash.com/photo-1595231712325-9fecdffe1908?q=80&w=600&auto=format&fit=crop');"></div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Banner Valori -->
+    <section class="values-banner">
+        <div class="container">
+            <h3>I Nostri Capisaldi</h3>
+            <div class="values-grid">
+                <div class="value-card">
+                    <h4>Materia Prima</h4>
+                    <p>Ingredienti a chilometro zero provenienti esclusivamente dai produttori locali dell'entroterra e dai mercati ittici della nostra costa.</p>
+                </div>
+                <div class="value-card">
+                    <h4>Ospitalità</h4>
+                    <p>Un ambiente caloroso e informale, dove sentirsi a casa tra un calice di Bianchetta e un racconto sui segreti di Genova.</p>
+                </div>
+                <div class="value-card">
+                    <h4>Rispetto del Tempo</h4>
+                    <p>Le lunghe cotture dei sughi, la pazienza della pasta tirata a mano. Qui la fretta lascia spazio al sapore.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer caricato dinamicamente -->
+    <div id="footer-placeholder"></div>
+
+    <!-- Script di caricamento moduli -->
+    <script>
+        fetch('header.html')
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById('header-placeholder').innerHTML = data;
+            })
+            .catch(error => console.error("Errore nel caricamento dell'header:", error));
+
+        fetch('footer.html')
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById('footer-placeholder').innerHTML = data;
+            })
+            .catch(error => console.error("Errore nel caricamento del footer:", error));
+    </script>
+</body>
+</html>
