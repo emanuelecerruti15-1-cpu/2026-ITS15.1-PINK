@@ -1,0 +1,332 @@
+================================================================================
+  RistoManager — ROADMAP LOGICA TAVOLI (per principianti Java)
+================================================================================
+
+A chi serve: a te che devi capire cosa fa la pagina TAVOLI e come scriverla
+             in Java nel modo piu semplice possibile.
+
+Pagina frontend: dashboard/tavoli.html (gia pronta)
+File Java da creare: TavoloController.java, TavoloService.java
+
+Regola d'oro: il tavolo NON salva il colore nel database.
+              Il colore (verde/rosso/arancione/grigio) lo CALCOLI ogni volta
+              guardando ordini e prenotazioni.
+
+
+================================================================================
+  PARTE 0 — COSA FA QUESTA SEZIONE
+================================================================================
+
+La pagina Tavoli serve a:
+  - Vedere la piantina con i 12 tavoli colorati
+  - Cliccare un tavolo e vedere dettaglio + pulsanti azione
+  - Aprire un ordine su tavolo libero
+  - Segnare un tavolo come "non disponibile" (rotto, pulizia...)
+
+Una sola sala, 12 tavoli fissi. Non si creano nuovi tavoli dal gestionale.
+
+
+================================================================================
+  PARTE 1 — TABELLA USATA (tavolo)
+================================================================================
+
+Campi importanti:
+  - id              → identificativo interno (1, 2, 3...)
+  - numero          → numero sulla piantina (1-12)
+  - posti           → quante persone (es. 4)
+  - non_disponibile → true = grigio, fuori servizio
+  - posizione_griglia → da 1 a 12 (ordine nella griglia 4x3)
+  - forma           → CERCHIO, QUADRATO, RETTANGOLARE (solo per disegno)
+
+Tabelle collegate (leggi ma non modifichi qui):
+  - ordine       → se c'e ordine APERTO/IN_CUCINA → tavolo ROSSO
+  - prenotazione → se prenotazione vicina → tavolo ARANCIONE
+
+
+================================================================================
+  PARTE 2 — I 4 STATI DEL TAVOLO (logica colore)
+================================================================================
+
+  VERDE     = LIBERO           → nessun ordine, nessuna prenotazione vicina
+  ROSSO     = OCCUPATO         → c'e ordine APERTO o IN_CUCINA
+  ARANCIONE = PRENOTATO        → prenotazione entro 2 ore, tavolo ancora libero
+  GRIGIO    = NON_DISPONIBILE  → non_disponibile = true
+
+Priorita (controlla in questo ordine):
+  1. non_disponibile = true     → GRIGIO (vince sempre)
+  2. ha ordine attivo           → ROSSO
+  3. ha prenotazione vicina     → ARANCIONE
+  4. altrimenti                  → VERDE
+
+
+--- METODO SEMPLICE: calcolaStato(Tavolo t) ---
+
+  public String calcolaStato(Tavolo t) {
+
+      // Passo 1: tavolo fuori servizio?
+      if (t.isNonDisponibile()) {
+          return "NON_DISPONIBILE";
+      }
+
+      // Passo 2: c'e un ordine aperto su questo tavolo?
+      Ordine ordine = ordineRepository.findByTavoloIdAndStatoIn(
+          t.getId(), List.of("APERTO", "IN_CUCINA")
+      );
+      if (ordine != null) {
+          return "OCCUPATO";
+      }
+
+      // Passo 3: c'e prenotazione entro 2 ore?
+      if (haPrenotazioneVicina(t.getId())) {
+          return "PRENOTATO";
+      }
+
+      // Passo 4: tutto ok
+      return "LIBERO";
+  }
+
+
+--- METODO SEMPLICE: haPrenotazioneVicina(Long tavoloId) ---
+
+  public boolean haPrenotazioneVicina(Long tavoloId) {
+      List<Prenotazione> lista = prenotazioneRepository.findByCancellataFalse();
+      LocalTime adesso = LocalTime.now();
+      LocalTime traDueOre = adesso.plusHours(2);
+
+      for (Prenotazione p : lista) {
+          // stesso tavolo O tavolo non assegnato ancora
+          if (p.getTavoloId() != null && !p.getTavoloId().equals(tavoloId)) {
+              continue; // salta, e un altro tavolo
+          }
+          if (p.getTavoloId() == null || p.getTavoloId().equals(tavoloId)) {
+              LocalTime oraPren = p.getOra();
+              if (!oraPren.isBefore(adesso) && !oraPren.isAfter(traDueOre)) {
+                  return true;
+              }
+          }
+      }
+      return false;
+  }
+
+
+================================================================================
+  PARTE 3 — COSA DEVE FARE OGNI PEZZO DELLA PAGINA
+================================================================================
+
+--- PEZZO 1: Piantina 4x12 ---
+Cosa fa: mostra 12 tavoli con colori giusti.
+Frontend: tavoli.js chiama GET /api/tavoli e disegna la griglia.
+Tu devi restituire lista di 12 oggetti con stato calcolato.
+
+
+--- PEZZO 2: Click su tavolo → pannello dettaglio ---
+Cosa fa: mostra numero tavolo, posti, stato, ordine se c'e.
+Frontend chiama: GET /api/tavoli/{id}
+
+Cosa restituire:
+  {
+    "id": 3,
+    "numero": 3,
+    "posti": 4,
+    "stato": "LIBERO",
+    "ordine": null
+  }
+
+Se occupato, aggiungi ordine:
+  "ordine": {
+    "id": 5,
+    "stato": "APERTO",
+    "totale": 24.00,
+    "righe": [
+      { "nome": "Carbonara", "quantita": 2, "prezzo": 12 }
+    ]
+  }
+
+
+--- PEZZO 3: Pulsante "Apri ordine" (tavolo LIBERO o PRENOTATO) ---
+Cosa fa: crea un nuovo ordine sul tavolo.
+NON e in TavoloService — chiama OrdineService (vedi ROADMAP-ORDINI.txt)
+Ma prima CONTROLLA:
+  - tavolo esiste?
+  - tavolo NON e non_disponibile?
+  - tavolo NON ha gia ordine attivo?
+
+Se ok → POST /api/ordini con { "tavoloId": 3 }
+
+
+--- PEZZO 4: Pulsante "Segna non disponibile" ---
+Cosa fa: alterna true/false sul campo non_disponibile.
+Endpoint: PUT /api/tavoli/{id}/non-disponibile
+
+Logica semplice:
+  1. Trova tavolo per id
+  2. Se non esiste → errore
+  3. non_disponibile = !non_disponibile  (se era false diventa true e viceversa)
+  4. Salva nel database
+  5. Restituisci tavolo aggiornato
+
+In Java:
+  public Tavolo toggleNonDisponibile(Long id) {
+      Tavolo t = tavoloRepository.findById(id)
+          .orElseThrow(() -> new RuntimeException("Tavolo non trovato"));
+      t.setNonDisponibile(!t.isNonDisponibile());
+      return tavoloRepository.save(t);
+  }
+
+
+--- PEZZO 5: Pulsante "Invia in cucina" / "Paga conto" ---
+Cosa fa: gestione ordine, NON del tavolo.
+Vedi ROADMAP-ORDINI.txt — qui usi solo gli endpoint ordini.
+
+
+--- PEZZO 6: Legenda colori ---
+Cosa fa: niente lato Java. E fissa nel HTML.
+
+
+================================================================================
+  PARTE 4 — GLI ENDPOINT DA CREARE (solo Tavoli)
+================================================================================
+
+--- GET /api/tavoli ---
+Cosa fa: restituisce tutti i 12 tavoli con stato calcolato.
+
+Metodo Service:
+  public List<TavoloResponse> getAllTavoli() {
+      List<Tavolo> tavoli = tavoloRepository.findAll();
+      List<TavoloResponse> risposta = new ArrayList<>();
+      for (Tavolo t : tavoli) {
+          TavoloResponse tr = new TavoloResponse();
+          tr.setId(t.getId());
+          tr.setNumero(t.getNumero());
+          tr.setPosti(t.getPosti());
+          tr.setForma(t.getForma());
+          tr.setStato(calcolaStato(t));
+          // se occupato, aggiungi info ordine breve
+          Ordine o = trovaOrdineAttivo(t.getId());
+          if (o != null) {
+              tr.setOrdine(creaOrdineBreve(o));
+          }
+          risposta.add(tr);
+      }
+      return risposta;
+  }
+
+Controller:
+  @GetMapping("/tavoli")
+  public List<TavoloResponse> listaTavoli() {
+      return tavoloService.getAllTavoli();
+  }
+
+
+--- GET /api/tavoli/{id} ---
+Cosa fa: dettaglio di UN tavolo (per pannello laterale).
+
+Metodo Service:
+  public TavoloDettaglioResponse getTavoloById(Long id) {
+      Tavolo t = tavoloRepository.findById(id)
+          .orElseThrow(() -> new RuntimeException("Tavolo non trovato"));
+      TavoloDettaglioResponse r = new TavoloDettaglioResponse();
+      r.setId(t.getId());
+      r.setNumero(t.getNumero());
+      r.setPosti(t.getPosti());
+      r.setStato(calcolaStato(t));
+      Ordine o = trovaOrdineAttivo(t.getId());
+      if (o != null) {
+          r.setOrdine(caricaOrdineConRighe(o.getId()));
+      }
+      return r;
+  }
+
+
+--- PUT /api/tavoli/{id}/non-disponibile ---
+Cosa fa: cambia non_disponibile true/false.
+
+Controller:
+  @PutMapping("/tavoli/{id}/non-disponibile")
+  public TavoloResponse toggleNonDisp(@PathVariable Long id) {
+      return tavoloService.toggleNonDisponibile(id);
+  }
+
+
+================================================================================
+  PARTE 5 — ORDINE DI LAVORO (fai in questo ordine)
+================================================================================
+
+  [ ] 1. Classe Entity Tavolo + TavoloRepository
+  [ ] 2. Inserisci 12 tavoli all'avvio (seed)
+  [ ] 3. Scrivi calcolaStato() — prova con System.out.println
+  [ ] 4. GET /api/tavoli — prova nel browser
+  [ ] 5. GET /api/tavoli/{id}
+  [ ] 6. PUT /api/tavoli/{id}/non-disponibile
+  [ ] 7. Apri tavoli.html e verifica colori e pannello
+
+
+================================================================================
+  PARTE 6 — DATI DI PROVA (seed) — 12 tavoli
+================================================================================
+
+All'avvio inserisci una volta sola (se tabella vuota):
+
+  Tavolo(1, 4 posti, CERCHIO,     posizione 1,  non_disp=false)
+  Tavolo(2, 4 posti, CERCHIO,     posizione 2,  non_disp=false)
+  Tavolo(3, 4 posti, QUADRATO,    posizione 3,  non_disp=false)
+  Tavolo(4, 6 posti, RETTANGOLARE,posizione 4, non_disp=false)
+  Tavolo(5, 4 posti, QUADRATO,    posizione 5,  non_disp=false)
+  Tavolo(6, 2 posti, CERCHIO,     posizione 6,  non_disp=false)
+  Tavolo(7, 2 posti, CERCHIO,     posizione 7,  non_disp=false)
+  Tavolo(8, 6 posti, RETTANGOLARE,posizione 8, non_disp=true)  ← grigio
+  Tavolo(9, 4 posti, RETTANGOLARE_V,posizione 9,non_disp=false)
+  Tavolo(10,2 posti, CERCHIO,     posizione 10, non_disp=false)
+  Tavolo(11,2 posti, CERCHIO,     posizione 11, non_disp=false)
+  Tavolo(12,4 posti, QUADRATO,    posizione 12, non_disp=true)  ← grigio
+
+
+================================================================================
+  PARTE 7 — FLUSSO PRATICO (esempio)
+================================================================================
+
+1. Utente apre pagina Tavoli
+   → GET /api/tavoli → vede 12 tavoli colorati
+
+2. Clicca Tavolo 6 (verde)
+   → GET /api/tavoli/6 → pannello: "Tavolo 6, 2 posti, Libero"
+   → Pulsanti: [Apri ordine] [Segna non disponibile]
+
+3. Clicca "Apri ordine"
+   → POST /api/ordini { tavoloId: 6 }  (vedi ROADMAP-ORDINI.txt)
+   → Pagina si ricarica, Tavolo 6 diventa ROSSO
+
+4. Clicca Tavolo 8 (grigio)
+   → Pannello: "Non disponibile"
+   → Pulsante: [Rendi disponibile]
+   → PUT /api/tavoli/8/non-disponibile → diventa verde
+
+
+================================================================================
+  PARTE 8 — COSA NON FARE
+================================================================================
+
+  X Salvare il colore/stato nel database (lo calcoli sempre!)
+  X Creare o eliminare tavoli dall'interfaccia
+  X Piu sale o spostare tavoli con drag-and-drop
+  X Login o permessi diversi per cameriere/cuoco
+
+
+================================================================================
+  PARTE 9 — SE TI BLOCHI
+================================================================================
+
+  Problema: tutti i tavoli sono verdi anche con ordini aperti
+  → Controlla trovaOrdineAttivo() — stampa il risultato in console
+
+  Problema: tavolo non cambia colore dopo apri ordine
+  → L'ordine e stato APERTO? tavolo_id corretto?
+
+  Problema: GET /api/tavoli da errore 500
+  → Guarda stack trace in console Spring Boot
+
+
+================================================================================
+  FINE — Altri file: ROADMAP-ORDINI.txt, ROADMAP-DASHBOARD.txt
+  Frontend: dashboard/tavoli.html + dashboard/js/tavoli.js
+================================================================================

@@ -1,0 +1,496 @@
+/* ================================================================
+   PAGINA TAVOLI — KPI, filtri, piantina, pannello laterale
+   ================================================================ */
+
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    border: 0;
+}
+
+.user-profile--admin {
+    gap: 10px;
+}
+
+.user-profile__chevron {
+    font-size: 12px;
+    color: var(--text-secondary);
+}
+
+/* --- Pagina compatta --- */
+.main-content--tavoli {
+    gap: 14px;
+    padding-top: 20px;
+    padding-bottom: 20px;
+}
+
+.main-content--tavoli .page-header {
+    margin-bottom: 0;
+}
+
+.main-content--tavoli .page-header__title {
+    font-size: 22px;
+}
+
+.main-content--tavoli .page-header__subtitle {
+    font-size: 13px;
+    margin-top: 2px;
+}
+
+/* --- KPI 5 card --- */
+.kpi-section--tavoli {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 10px;
+    margin-bottom: 4px;
+}
+
+.kpi-section--tavoli .tavoli-kpi-card {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-height: 72px;
+    padding: 12px 14px;
+    box-sizing: border-box;
+}
+
+.kpi-section--tavoli .tavoli-kpi-card__icon {
+    width: 40px;
+    height: 40px;
+    min-width: 40px;
+    border-radius: 50%;
+}
+
+.kpi-section--tavoli .tavoli-kpi-card__icon svg {
+    width: 20px;
+    height: 20px;
+}
+
+.kpi-card__icon--gray {
+    background: #e2e8f0;
+    color: #718096;
+}
+
+.kpi-section--tavoli .kpi-card__label {
+    text-transform: none;
+    letter-spacing: 0;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-secondary);
+}
+
+.kpi-section--tavoli .kpi-card__value {
+    font-size: 22px;
+    font-weight: 700;
+    line-height: 1.1;
+}
+
+/* --- Filtri dentro piantina --- */
+.tavoli-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.tavoli-filters--in-plan {
+    position: relative;
+    z-index: 2;
+    justify-content: center;
+    padding: 0 4px 10px;
+    margin-bottom: 2px;
+}
+
+.tavoli-filter {
+    padding: 5px 12px;
+    border: 1px solid rgba(180, 140, 90, 0.45);
+    border-radius: 999px;
+    background: rgba(255, 252, 245, 0.92);
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 600;
+    color: #5a4a32;
+    cursor: pointer;
+    transition: background 0.15s, border-color 0.15s, color 0.15s;
+}
+
+.tavoli-filter:hover {
+    border-color: #b48c5a;
+    color: #3d3224;
+    background: #fff;
+}
+
+.tavoli-filter--active {
+    background: #2b6cb0;
+    border-color: #2b6cb0;
+    color: #fff;
+}
+
+/* --- Layout principale --- */
+.tavoli-layout {
+    display: grid;
+    grid-template-columns: 1.45fr 0.9fr;
+    gap: 14px;
+    align-items: start;
+}
+
+.tavoli-sala-card {
+    min-width: 0;
+    padding: 14px 16px 12px;
+}
+
+.tavoli-sala-card .card__header--compact {
+    margin-bottom: 8px;
+}
+
+.tavoli-sala-card .floor-plan {
+    margin-bottom: 8px;
+    padding: 10px 12px 12px;
+}
+
+.tavoli-sala-card .floor-plan--large .floor-plan__room--arch {
+    min-height: auto;
+    padding: 14px 16px 16px;
+}
+
+.tavoli-sala-card .floor-plan__grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+    gap: 10px;
+    width: 100%;
+    min-height: 268px;
+    position: relative;
+    z-index: 2;
+}
+
+.tavoli-sala-card .floor-plan__cell {
+    min-height: 78px;
+}
+
+.tavoli-sala-card .floor-plan__pot--tl {
+    top: 6px;
+    left: 12px;
+}
+
+.tavoli-sala-card .floor-plan__pot--br {
+    bottom: 8px;
+    right: 12px;
+}
+
+.tavoli-sala-card .floor-plan__pot-svg {
+    width: 28px;
+}
+
+.tavoli-sala-card .floor-plan__pot-svg--tall {
+    width: 26px;
+}
+
+.floor-plan-legend--compact {
+    gap: 14px;
+    padding-top: 0;
+}
+
+.floor-plan__cell--hidden {
+    opacity: 0.2;
+    pointer-events: none;
+}
+
+.table--selected {
+    outline: 3px solid #3182ce !important;
+    outline-offset: 3px;
+    box-shadow: 0 0 0 4px rgba(49, 130, 206, 0.25) !important;
+}
+
+/* --- Pannello laterale tavolo --- */
+.tavolo-panel {
+    align-self: start;
+    position: sticky;
+    top: 14px;
+    padding: 14px 16px;
+}
+
+.tavolo-panel__empty {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 200px;
+    padding: 28px 20px;
+    text-align: center;
+    color: var(--text-secondary);
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.tavolo-panel__body {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.tavolo-panel__header {
+    padding-bottom: 12px;
+    border-bottom: 1px solid #e8edf3;
+}
+
+.tavolo-panel__head-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 6px;
+}
+
+.tavolo-panel__title {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.tavolo-panel__badge {
+    font-size: 12px;
+    font-weight: 600;
+    padding: 5px 12px;
+    border-radius: 999px;
+}
+
+.tavolo-panel__meta {
+    margin: 0 0 4px;
+    font-size: 14px;
+    color: var(--text-secondary);
+}
+
+.tavolo-panel__section-title {
+    margin: 0 0 8px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: #718096;
+}
+
+.tavolo-panel__section {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.tavolo-panel__section--gestione,
+.tavolo-panel__section--info {
+    padding-top: 12px;
+    border-top: 1px solid #e8edf3;
+}
+
+.tavolo-panel__label {
+    font-size: 13px;
+    font-weight: 600;
+    color: #4a5568;
+    margin: 0 0 4px;
+}
+
+/* Griglia bottoni stato tavolo */
+.stato-btns {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 2px;
+}
+
+.stato-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 7px;
+    min-height: 40px;
+    padding: 8px 10px;
+    border: 2px solid #e2e8f0;
+    border-radius: 10px;
+    background: #fff !important;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-primary);
+    cursor: pointer;
+    transition: border-color 0.15s, background 0.15s, box-shadow 0.15s;
+    text-align: left;
+}
+
+.stato-btn:hover {
+    border-color: #cbd5e0;
+    background: #f7fafc !important;
+}
+
+.stato-btn__dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.stato-btn--non-disp {
+    grid-column: 1 / -1;
+}
+
+.stato-btn--libero .stato-btn__dot { background: #38a169; }
+.stato-btn--occupato .stato-btn__dot { background: #e53e3e; }
+.stato-btn--prenotato .stato-btn__dot { background: #dd6b20; }
+.stato-btn--non-disp .stato-btn__dot { background: #a0aec0; }
+
+.stato-btn--libero.stato-btn--active {
+    border-color: #38a169;
+    background: #f0fff4 !important;
+    box-shadow: 0 0 0 3px rgba(56, 161, 105, 0.15);
+}
+
+.stato-btn--occupato.stato-btn--active {
+    border-color: #e53e3e;
+    background: #fff5f5 !important;
+    box-shadow: 0 0 0 3px rgba(229, 62, 62, 0.12);
+}
+
+.stato-btn--prenotato.stato-btn--active {
+    border-color: #dd6b20;
+    background: #fffaf0 !important;
+    box-shadow: 0 0 0 3px rgba(221, 107, 32, 0.12);
+}
+
+.stato-btn--non-disp.stato-btn--active {
+    border-color: #a0aec0;
+    background: #f7fafc !important;
+    box-shadow: 0 0 0 3px rgba(160, 174, 192, 0.2);
+}
+
+.tavolo-panel__box {
+    padding: 14px;
+    background: #f7fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+}
+
+.tavolo-panel__box-title {
+    margin: 0 0 10px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #718096;
+}
+
+.tavolo-panel__riga {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 0;
+    border-bottom: 1px solid #edf2f7;
+    font-size: 14px;
+}
+
+.tavolo-panel__totale {
+    display: flex;
+    justify-content: space-between;
+    padding-top: 10px;
+    margin-top: 6px;
+    border-top: 1px solid #e2e8f0;
+    font-weight: 700;
+}
+
+.tavolo-panel__info-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.tavolo-panel__info-list li {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    font-size: 13px;
+    color: var(--text-secondary);
+}
+
+.tavolo-panel__info-list strong {
+    color: var(--text-primary);
+    font-weight: 600;
+}
+
+/* --- Pulsanti tavoli --- */
+.tavoli-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    min-height: 40px;
+    padding: 8px 14px;
+    border-radius: 10px;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s, border-color 0.15s, opacity 0.15s;
+    box-sizing: border-box;
+}
+
+.tavoli-btn svg {
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+}
+
+.tavoli-btn--primary {
+    background-color: #2b6cb0 !important;
+    color: #ffffff !important;
+    border: none !important;
+    box-shadow: 0 2px 6px rgba(43, 108, 176, 0.28);
+}
+
+.tavoli-btn--primary:hover {
+    background-color: #2c5282 !important;
+}
+
+.tavoli-btn--outline {
+    background: #fff !important;
+    color: var(--text-primary) !important;
+    border: 1px solid #e2e8f0 !important;
+}
+
+.tavoli-btn--outline:hover {
+    background: #f7fafc !important;
+    border-color: #cbd5e0 !important;
+}
+
+#salva-stato-btn {
+    margin-top: 4px;
+}
+
+@media (max-width: 1200px) {
+    .kpi-section--tavoli {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 1000px) {
+    .tavoli-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .tavolo-panel {
+        position: static;
+    }
+
+    .kpi-section--tavoli {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 600px) {
+    .kpi-section--tavoli {
+        grid-template-columns: 1fr;
+    }
+}

@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<!-- ============================================================
+     PAGINA MENU — RistoManager MVP
+     Descrizione: KPI piatti, elenco con ricerca, form aggiungi/modifica.
+     ============================================================ -->
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RistoManager — Menu</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css?v=12">
+    <link rel="stylesheet" href="css/pages.css?v=3">
+    <link rel="stylesheet" href="css/menu.css?v=2">
+</head>
+<body>
+    <div class="app-layout">
+
+        <aside class="sidebar" aria-label="Menu di navigazione">
+            <div class="sidebar__header">
+                <div class="sidebar__logo">
+                    <span class="sidebar__logo-mark" aria-hidden="true">RM</span>
+                    <span class="sidebar__logo-text">RistoManager</span>
+                </div>
+                <button class="sidebar__close-btn" type="button" aria-label="Chiudi menu">✕</button>
+            </div>
+            <nav class="sidebar__nav">
+                <ul class="sidebar__menu" id="sidebar-menu"></ul>
+            </nav>
+            <div class="sidebar__footer">
+                <div class="sidebar__clock" aria-live="polite">
+                    <span class="sidebar__clock-time" id="sidebar-time">--:--</span>
+                    <span class="sidebar__clock-date" id="sidebar-date"></span>
+                </div>
+                <button type="button" class="sidebar__chiudi-giornata" data-action="chiudi-giornata">Chiudi Giornata</button>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <header class="page-header">
+                <div>
+                    <h1 class="page-header__title">Menu</h1>
+                    <p class="page-header__subtitle">Gestisci i piatti disponibili per gli ordini.</p>
+                </div>
+                <div class="user-profile">
+                    <div class="user-profile__avatar" aria-hidden="true">R</div>
+                    <div class="user-profile__info"><span class="user-profile__name">RistoManager</span></div>
+                </div>
+            </header>
+
+            <div id="api-notice" class="api-notice is-hidden" role="status"></div>
+
+            <!-- KPI piatti -->
+            <section class="kpi-section kpi-section--menu" aria-label="Riepilogo piatti">
+                <article class="kpi-card menu-kpi-card">
+                    <div class="kpi-card__icon kpi-card__icon--blue menu-kpi-card__icon">
+                        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                            <path d="M3 13h18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                            <path d="M5 13c0-5.5 3.1-9 7-9s7 3.5 7 9" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+                            <circle cx="12" cy="6" r="1" fill="currentColor"/>
+                        </svg>
+                    </div>
+                    <div class="kpi-card__content">
+                        <span class="kpi-card__label">Piatti totali</span>
+                        <span class="kpi-card__value" id="kpi-totali">0</span>
+                        <span class="kpi-card__subtext">Totale piatti nel menu</span>
+                    </div>
+                </article>
+                <article class="kpi-card menu-kpi-card">
+                    <div class="kpi-card__icon kpi-card__icon--green menu-kpi-card__icon">
+                        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                            <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/>
+                            <path d="M8 12.5l2.5 2.5L16 9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
+                    <div class="kpi-card__content">
+                        <span class="kpi-card__label">Disponibili</span>
+                        <span class="kpi-card__value" id="kpi-disponibili">0</span>
+                        <span class="kpi-card__subtext">Piatti disponibili per gli ordini</span>
+                    </div>
+                </article>
+                <article class="kpi-card menu-kpi-card">
+                    <div class="kpi-card__icon kpi-card__icon--orange menu-kpi-card__icon">
+                        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                            <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/>
+                            <path d="M9 9l6 6M15 9l-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                        </svg>
+                    </div>
+                    <div class="kpi-card__content">
+                        <span class="kpi-card__label">Non disponibili</span>
+                        <span class="kpi-card__value" id="kpi-non-disponibili">0</span>
+                        <span class="kpi-card__subtext">Piatti non disponibili</span>
+                    </div>
+                </article>
+            </section>
+
+            <section class="menu-layout">
+                <!-- Elenco piatti -->
+                <article class="card menu-list-card">
+                    <div class="card__header">
+                        <h2 class="card__title">Elenco piatti</h2>
+                    </div>
+                    <div class="menu-search">
+                        <span class="menu-search__icon" aria-hidden="true">
+                            <svg viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="2"/><path d="M20 20l-3-3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+                        </span>
+                        <input type="search" id="cerca-piatto" class="menu-search__input" placeholder="Cerca piatto..." autocomplete="off">
+                    </div>
+                    <div class="data-table-wrap">
+                        <table class="data-table menu-table">
+                            <thead>
+                                <tr>
+                                    <th>Nome</th>
+                                    <th>Prezzo</th>
+                                    <th>Stato</th>
+                                    <th>Azioni</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tabella-piatti"></tbody>
+                        </table>
+                    </div>
+                    <div class="menu-pagination">
+                        <span class="menu-pagination__info" id="pagination-info">Mostra 10 piatti per pagina</span>
+                        <div class="menu-pagination__controls" id="pagination-controls" aria-hidden="true"></div>
+                    </div>
+                </article>
+
+                <!-- Form aggiungi / modifica -->
+                <article class="card menu-form-card">
+                    <div class="menu-form-card__head">
+                        <span class="menu-form-card__icon" aria-hidden="true">
+                            <svg viewBox="0 0 24 24" fill="none"><rect x="5" y="3" width="14" height="18" rx="2" stroke="currentColor" stroke-width="2"/><path d="M12 8v8M8 12h8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+                        </span>
+                        <h2 class="menu-form-card__title" id="form-titolo">Aggiungi nuovo piatto</h2>
+                    </div>
+                    <form id="form-piatto" class="menu-form">
+                        <input type="hidden" id="piatto-id" value="">
+                        <div class="menu-form__field">
+                            <label for="piatto-nome">Nome piatto</label>
+                            <div class="menu-input-wrap">
+                                <input type="text" id="piatto-nome" class="menu-input" required placeholder="Es. Pizza Margherita">
+                                <span class="menu-input-wrap__icon" aria-hidden="true">🍽️</span>
+                            </div>
+                        </div>
+                        <div class="menu-form__field">
+                            <label for="piatto-prezzo">Prezzo (€)</label>
+                            <div class="menu-input-wrap">
+                                <input type="number" id="piatto-prezzo" class="menu-input" step="0.01" min="0" required placeholder="0,00">
+                                <span class="menu-input-wrap__icon menu-input-wrap__icon--text" aria-hidden="true">€</span>
+                            </div>
+                        </div>
+                        <div class="menu-form__field">
+                            <label for="piatto-disponibile">Disponibile</label>
+                            <div class="menu-select-wrap">
+                                <select id="piatto-disponibile" class="menu-select">
+                                    <option value="true">Sì</option>
+                                    <option value="false">No</option>
+                                </select>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn--primary btn--block menu-form__submit" id="btn-salva-piatto">
+                            <span aria-hidden="true">+</span> Salva piatto
+                        </button>
+                        <button type="button" class="btn btn--secondary btn--block is-hidden" id="btn-annulla">Annulla modifica</button>
+                    </form>
+                </article>
+            </section>
+
+            <div class="menu-tip" role="note">
+                <span class="menu-tip__icon" aria-hidden="true">ℹ️</span>
+                <p>Per disattivare temporaneamente un piatto senza eliminarlo, imposta <strong>Disponibile</strong> su <strong>No</strong> dalla modifica.</p>
+            </div>
+        </main>
+    </div>
+    <script src="js/api.js"></script>
+    <script src="js/app.js?v=5"></script>
+    <script src="js/menu.js?v=2"></script>
+</body>
+</html>

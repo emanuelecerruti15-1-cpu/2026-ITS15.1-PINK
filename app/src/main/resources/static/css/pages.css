@@ -1,0 +1,416 @@
+/* ================================================================
+   STILI PAGINE INTERNE — Tavoli, Ordini, Prenotazioni, Menu
+   Descrizione: Layout, form, tabelle e pannello dettaglio MVP.
+   ================================================================ */
+
+/* Intestazione pagina interna (titolo + sottotitolo) */
+.page-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 20px;
+    flex-wrap: wrap;
+    margin-bottom: 4px;
+}
+
+.page-header__title {
+    font-size: 24px;
+    font-weight: 700;
+    letter-spacing: -0.03em;
+}
+
+.page-header__subtitle {
+    font-size: 14px;
+    color: var(--text-secondary);
+    margin-top: 4px;
+}
+
+/* Layout due colonne: contenuto principale + pannello laterale */
+.page-split {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr;
+    gap: 20px;
+    align-items: start;
+}
+
+/* Piantina ingrandita (solo layout legacy senza arch) */
+.floor-plan--large .floor-plan__room:not(.floor-plan__room--arch) {
+    min-height: 420px;
+}
+
+/* Pannello dettaglio tavolo/ordine a destra */
+.detail-panel {
+    min-height: 320px;
+    display: flex;
+    flex-direction: column;
+}
+
+.detail-panel__empty {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    color: var(--text-secondary);
+    padding: 40px 20px;
+}
+
+.detail-panel__content {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.detail-panel__header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.detail-panel__header-info {
+    min-width: 0;
+}
+
+/* Usato anche in ordini.html */
+.detail-panel__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.detail-panel__title {
+    font-size: 20px;
+    font-weight: 700;
+    line-height: 1.2;
+}
+
+.detail-panel__meta {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin-top: 4px;
+}
+
+.detail-panel__section-title {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-secondary);
+    margin-bottom: 0;
+}
+
+.detail-panel__section {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.detail-panel__section--manual {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 14px;
+    gap: 8px;
+}
+
+.detail-panel__label {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-secondary);
+}
+
+.detail-panel__select {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #e2e8f0;
+    border-radius: var(--radius-btn);
+    background: #fff;
+    font-size: 14px;
+    color: var(--text-primary);
+}
+
+.detail-panel__select:focus {
+    outline: 2px solid var(--color-blue-light);
+    border-color: var(--color-blue);
+}
+
+.detail-panel__order {
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 14px;
+}
+
+.detail-panel__righe {
+    margin-bottom: 8px;
+}
+
+.detail-panel__riga {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 0;
+    border-bottom: 1px solid #edf2f7;
+    font-size: 14px;
+}
+
+.detail-panel__totale {
+    display: flex;
+    justify-content: space-between;
+    font-size: 16px;
+    font-weight: 700;
+    padding-top: 12px;
+    border-top: 1px solid #edf2f7;
+    margin-bottom: 0;
+}
+
+/* Nasconde elementi via JavaScript */
+.is-hidden {
+    display: none !important;
+}
+
+/* ---------------------------------------------------------------
+   BOTTONI — Azioni principali del gestionale
+   --------------------------------------------------------------- */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 16px;
+    border-radius: var(--radius-btn);
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    transition: opacity 0.2s;
+}
+
+.btn:hover {
+    opacity: 0.9;
+}
+
+.btn--primary {
+    background: var(--color-red);
+    color: #fff;
+}
+
+.btn--secondary {
+    background: #edf2f7;
+    color: var(--text-primary);
+}
+
+.btn--danger {
+    background: #fed7d7;
+    color: #c53030;
+}
+
+.btn--block {
+    width: 100%;
+}
+
+/* ---------------------------------------------------------------
+   FORM — Campi input per prenotazioni e menu
+   --------------------------------------------------------------- */
+.form-card {
+    margin-bottom: 20px;
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.form-group--full {
+    grid-column: 1 / -1;
+}
+
+.form-group label {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-secondary);
+}
+
+.form-group input,
+.form-group select {
+    padding: 10px 12px;
+    border: 1px solid #e2e8f0;
+    border-radius: var(--radius-btn);
+    background: #fff;
+    font-size: 14px;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+    outline: 2px solid var(--color-blue-light);
+    border-color: var(--color-blue);
+}
+
+.form-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 8px;
+}
+
+/* ---------------------------------------------------------------
+   TABELLA DATI — Menu piatti e liste ordini
+   --------------------------------------------------------------- */
+.data-table-wrap {
+    overflow-x: auto;
+}
+
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+}
+
+.data-table th {
+    text-align: left;
+    padding: 12px 16px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-secondary);
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.data-table td {
+    padding: 14px 16px;
+    border-bottom: 1px solid #edf2f7;
+}
+
+.data-table tr:last-child td {
+    border-bottom: none;
+}
+
+.data-table__actions {
+    display: flex;
+    gap: 8px;
+}
+
+.link-btn {
+    background: none;
+    border: none;
+    color: var(--color-red);
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    padding: 0;
+}
+
+.link-btn--muted {
+    color: var(--text-secondary);
+}
+
+/* Lista ordini cliccabile (pagina Ordini) */
+.order-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 14px 16px;
+    border-bottom: 1px solid #edf2f7;
+    cursor: pointer;
+    transition: background 0.15s;
+}
+
+.order-row:hover {
+    background: #f7fafc;
+}
+
+.order-row--active {
+    background: #edf2f7;
+}
+
+.order-row:last-child {
+    border-bottom: none;
+}
+
+/* Badge stato Pagato (solo storico, grigio) */
+.status-badge--paid {
+    background: #e2e8f0;
+    color: var(--text-secondary);
+}
+
+/* Messaggio lista vuota */
+.empty-state {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--text-secondary);
+    font-size: 14px;
+}
+
+/* Avviso backend non connesso */
+.api-notice {
+    background: #feebc8;
+    color: #744210;
+    padding: 10px 14px;
+    border-radius: var(--radius-btn);
+    font-size: 13px;
+    margin-bottom: 16px;
+}
+
+/* Tavolo selezionato sulla piantina */
+.table--selected {
+    outline: 3px solid var(--color-blue);
+    outline-offset: 2px;
+}
+
+/* Pulsante Salva stato — pagina Tavoli (ID per forzare lo stile) */
+#salva-stato-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    min-height: 48px;
+    padding: 12px 16px;
+    border: none;
+    border-radius: 10px;
+    background-color: #2b6cb0;
+    color: #ffffff;
+    font-family: inherit;
+    font-size: 15px;
+    font-weight: 600;
+    line-height: 1;
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(43, 108, 176, 0.3);
+    transition: background-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+#salva-stato-btn:hover {
+    background-color: #2c5282;
+    opacity: 1;
+}
+
+#salva-stato-btn:active {
+    transform: translateY(1px);
+}
+
+#salva-stato-btn:disabled {
+    background-color: #a0aec0;
+    color: #edf2f7;
+    cursor: not-allowed;
+    box-shadow: none;
+}
+
+@media (max-width: 1000px) {
+    .page-split {
+        grid-template-columns: 1fr;
+    }
+
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+}

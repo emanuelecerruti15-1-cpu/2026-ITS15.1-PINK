@@ -1,0 +1,223 @@
+ELENCO LAVORO SVOLTO — COLLEGAMENTO MENU / PIATTI AL GESTIONALE
+
+1. ANALISI INIZIALE DEL PROGETTO
+- Verificata la presenza del progetto NetBeans "GestionaleRistorante".
+- Verificata la presenza del frontend HTML/CSS/JS.
+- Individuata la sezione Menu come prima area da collegare alla logica Java.
+- Scelta la logica "Piatto" come primo oggetto del gestionale da sviluppare.
+
+
+2. CREAZIONE MODEL PIATTO
+- Creato il package model.
+- Creato il file Piatto.java.
+- Definiti gli attributi base del piatto:
+  - id
+  - nome
+  - prezzo
+  - disponibile
+- Creato il costruttore vuoto.
+- Creato il costruttore con parametri.
+- Creati getter e setter.
+- Testato l’oggetto Piatto con una classe TestPiatto.
+- Verificato che Piatto.java compila e funziona correttamente.
+
+
+3. CREAZIONE SERVICE PIATTO
+- Creato il package service.
+- Creato il file PiattoService.java.
+- Creata una lista in memoria per salvare temporaneamente i piatti.
+- Creato un sistema automatico per generare gli id dei piatti.
+- Inseriti piatti iniziali di esempio:
+  - Pizza Margherita
+  - Spaghetti Carbonara
+  - Tiramisù
+- Implementata la funzione per recuperare tutti i piatti.
+- Implementata la funzione per recuperare un piatto tramite id.
+- Implementata la funzione per creare un nuovo piatto.
+- Implementata la funzione per modificare un piatto esistente.
+- Implementata la funzione per eliminare un piatto.
+- Implementata la funzione per cambiare la disponibilità di un piatto.
+- Implementate validazioni base:
+  - nome non vuoto
+  - prezzo maggiore di zero
+
+
+4. TEST DEL SERVICE
+- Creata una classe di test per usare PiattoService.
+- Verificata la creazione dei piatti iniziali.
+- Verificata l’aggiunta di un nuovo piatto.
+- Verificata la modifica di un piatto.
+- Verificata la modifica della disponibilità.
+- Verificata l’eliminazione di un piatto.
+- Confermato che Piatto e PiattoService lavorano insieme.
+
+
+5. CONFIGURAZIONE SPRING BOOT
+- Aggiunta la dipendenza spring-boot-starter-web nel pom.xml.
+- Impostata la versione di Spring Boot Web.
+- Sistemata la versione Java di compilazione a 21.
+- Ricreato il progetto con Clean and Build.
+- Verificato che Spring Boot viene riconosciuto dal progetto.
+
+
+6. CREAZIONE CLASSE PRINCIPALE SPRING BOOT
+- Creata la classe GestionaleRistoranteApplication.java.
+- Aggiunta l’annotazione @SpringBootApplication.
+- Configurato lo scan dei package:
+  - com.mycompany.gestionaleristorante
+  - controller
+  - service
+  - model
+- Avviato il backend tramite GestionaleRistoranteApplication.java.
+- Verificato l’avvio di Tomcat sulla porta 8080.
+- Verificato l’avvio corretto di Spring Boot.
+
+
+7. CREAZIONE CONTROLLER PIATTO
+- Creato il package controller.
+- Creato il file PiattoController.java.
+- Collegato PiattoController a PiattoService.
+- Esposto l’endpoint base:
+  - /api/piatti
+- Implementata API per ottenere tutti i piatti:
+  - GET /api/piatti
+- Implementata API per ottenere un singolo piatto:
+  - GET /api/piatti/{id}
+- Implementata API per creare un piatto:
+  - POST /api/piatti
+- Implementata API per modificare un piatto:
+  - PUT /api/piatti/{id}
+- Implementata API per eliminare un piatto:
+  - DELETE /api/piatti/{id}
+- Configurato @CrossOrigin per permettere le chiamate dal frontend.
+- Corretto l’uso di @PathVariable("id").
+
+
+8. TEST API DA BROWSER
+- Avviato il backend.
+- Aperto nel browser:
+  - http://localhost:8080/api/piatti
+- Verificata la risposta JSON con i piatti del backend.
+- Confermato che Java restituisce dati reali al browser.
+- Confermato il collegamento:
+  - Browser
+  - Spring Boot
+  - PiattoController
+  - PiattoService
+  - Piatto
+
+
+9. SISTEMAZIONE STRUTTURA FRONTEND STATICO
+- Verificata la posizione dei file HTML/CSS/JS.
+- Sistemata la cartella statica corretta per Spring Boot:
+  - src/main/resources/static
+- Verificata la struttura:
+  - static/index.html
+  - static/menu.html
+  - static/ordini.html
+  - static/prenotazioni.html
+  - static/tavoli.html
+  - static/css/style.css
+  - static/css/pages.css
+  - static/js/api.js
+  - static/js/menu.js
+  - static/js/ordini.js
+  - static/js/prenotazioni.js
+  - static/js/tavoli.js
+- Verificato che Spring Boot serve correttamente i file statici.
+- Verificato che:
+  - http://localhost:8080/menu.html
+  - http://localhost:8080/js/menu.js
+  funzionano correttamente.
+
+
+10. COLLEGAMENTO API.JS AL BACKEND
+- Controllato il file api.js.
+- Verificato API_BASE:
+  - http://localhost:8080/api
+- Collegata la funzione getPiatti:
+  - GET /piatti
+- Collegata la funzione creaPiatto:
+  - POST /piatti
+- Collegata la funzione modificaPiatto:
+  - PUT /piatti/{id}
+- Collegata la funzione eliminaPiatto:
+  - DELETE /piatti/{id}
+- Aggiornate le funzioni per inviare oggetti piatto completi al backend.
+
+
+11. COLLEGAMENTO MENU.JS ALLA PAGINA MENU
+- Verificato che menu.html carica:
+  - js/api.js
+  - js/menu.js
+- Verificato l’ordine corretto degli script:
+  - prima api.js
+  - poi menu.js
+- Collegato il caricamento iniziale dei piatti a getPiatti().
+- Verificato che la pagina Menu riceve i 3 piatti dal backend Java.
+- Verificato che non usa più i dati demo quando il backend è attivo.
+
+
+12. LOGICA FRONTEND MENU
+- Gestita la visualizzazione dei piatti nella tabella.
+- Gestito il pulsante Modifica.
+- Gestito il riempimento automatico del form quando si modifica un piatto.
+- Gestito il pulsante Annulla.
+- Gestita la creazione di un nuovo oggetto piatto dal form.
+- Gestito il salvataggio tramite creaPiatto().
+- Gestita la modifica tramite modificaPiatto().
+- Gestita l’eliminazione tramite eliminaPiatto().
+- Aggiunto aggiornamento tabella dopo le operazioni.
+- Aggiunti messaggi di errore più leggibili.
+- Aggiunto console.error per vedere gli errori reali.
+
+
+13. COLLEGAMENTO COMPLETO OTTENUTO
+- La pagina menu.html viene servita da Spring Boot.
+- Il file menu.js viene caricato correttamente.
+- Il file api.js viene caricato correttamente.
+- La pagina Menu chiama il backend.
+- Il backend risponde con dati Java.
+- I piatti visualizzati arrivano da PiattoService.
+- Le azioni del frontend arrivano fino al PiattoController.
+- Il PiattoController chiama PiattoService.
+- PiattoService modifica la lista in memoria.
+
+
+14. FLUSSO FINALE ATTUALE
+
+menu.html
+→ js/menu.js
+→ js/api.js
+→ http://localhost:8080/api/piatti
+→ PiattoController.java
+→ PiattoService.java
+→ List<Piatto>
+→ risposta JSON
+→ tabella Menu aggiornata
+
+
+15. COSA FUNZIONA ORA
+- Avvio Spring Boot.
+- Visualizzazione pagina menu.html.
+- Caricamento dei piatti dal backend.
+- Visualizzazione dei piatti Java nella tabella.
+- Chiamata GET /api/piatti funzionante.
+- Collegamento frontend/backend attivo.
+- File statici serviti da Spring Boot.
+- Struttura base pronta per continuare con altre sezioni.
+
+
+16. COSA È STATO COSTRUITO COME BASE PER IL RESTO DEL GESTIONALE
+- Modello Java.
+- Service Java.
+- Controller REST.
+- API JavaScript.
+- Collegamento HTML/JS/backend.
+- Struttura static di Spring Boot.
+- Primo flusso completo frontend-backend.
+- Base replicabile per:
+  - Tavoli
+  - Ordini
+  - Prenotazioni
+  - Dashboard

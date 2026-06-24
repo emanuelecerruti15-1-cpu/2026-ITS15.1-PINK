@@ -1,0 +1,297 @@
+================================================================================
+  RistoManager — ROADMAP LOGICA PRENOTAZIONI (per principianti Java)
+================================================================================
+
+A chi serve: a capire come gestire chi prenota un tavolo per oggi.
+
+Pagina frontend: dashboard/prenotazioni.html (gia pronta)
+File Java: PrenotazioneController.java, PrenotazioneService.java
+
+Regola d'oro: solo prenotazioni di OGGI. Niente date future nel MVP.
+              Per "cancellare" metti cancellata = true (non elimini la riga).
+
+
+================================================================================
+  PARTE 0 — COSA FA QUESTA SEZIONE
+================================================================================
+
+Le prenotazioni servono a:
+  - Salvare chi viene oggi, a che ora, quante persone
+  - Assegnare (opzionale) un tavolo
+  - Cancellare una prenotazione
+  - Far diventare arancione un tavolo prenotato (vedi Tavoli)
+
+NON serve (per ora):
+  - Prenotazioni per domani o altre date
+  - Conferma arrivo cliente, no-show, SMS
+  - Prenotazioni dal sito web
+
+
+================================================================================
+  PARTE 1 — TABELLA prenotazione
+================================================================================
+
+Campi:
+  - id
+  - nome_cliente   → es. "Mario Rossi"
+  - ora            → es. 14:30 (solo l'ora, oggi e implicito)
+  - tavolo_id      → opzionale, puo essere null ("Da assegnare")
+  - persone        → es. 4
+  - cancellata     → false = attiva, true = cancellata
+
+Come si fa in Java:
+  @Entity
+  public class Prenotazione {
+      @Id @GeneratedValue
+      private Long id;
+      private String nomeCliente;
+      private LocalTime ora;
+      private Long tavoloId;      // puo essere null
+      private int persone;
+      private boolean cancellata = false;
+      // getter e setter...
+  }
+
+
+================================================================================
+  PARTE 2 — COSA DEVE FARE OGNI PEZZO DELLA PAGINA
+================================================================================
+
+--- PEZZO 1: Form "Nuova prenotazione" ---
+Campi che arrivano dal frontend:
+  - nomeCliente (testo)
+  - ora (es. "20:00")
+  - persone (numero)
+  - tavoloId (opzionale, puo mancare)
+
+Validazioni semplici:
+  - nome non vuoto
+  - persone >= 1
+  - ora non vuota
+  - se tavoloId presente → tavolo deve esistere
+
+
+--- PEZZO 2: Lista prenotazioni di oggi ---
+Mostra tutte con cancellata = false, ordinate per ora.
+
+
+--- PEZZO 3: Pulsante "Cancella" ---
+Mette cancellata = true. La riga resta nel database.
+
+
+--- PEZZO 4: Effetto sui tavoli (colore arancione) ---
+Non lo fai qui direttamente.
+TavoloService.calcolaStato() legge le prenotazioni e decide se arancione.
+Regola: prenotazione entro 2 ore + tavolo libero → PRENOTATO
+
+
+================================================================================
+  PARTE 3 — METODI PRINCIPALI
+================================================================================
+
+--- METODO 1: getPrenotazioniOggi() ---
+
+  public List<PrenotazioneResponse> getPrenotazioniOggi() {
+      List<Prenotazione> lista = prenotazioneRepository.findByCancellataFalse();
+      // ordina per ora crescente
+      lista.sort((a, b) -> a.getOra().compareTo(b.getOra()));
+
+      List<PrenotazioneResponse> risposta = new ArrayList<>();
+      for (Prenotazione p : lista) {
+          PrenotazioneResponse r = new PrenotazioneResponse();
+          r.setId(p.getId());
+          r.setNomeCliente(p.getNomeCliente());
+          r.setOra(p.getOra().toString());  // "14:30"
+          r.setPersone(p.getPersone());
+          if (p.getTavoloId() != null) {
+              Tavolo t = tavoloRepository.findById(p.getTavoloId()).get();
+              r.setTavoloNumero(t.getNumero());
+          } else {
+              r.setTavoloNumero(null);  // frontend mostra "Da assegnare"
+          }
+          risposta.add(r);
+      }
+      return risposta;
+  }
+
+
+--- METODO 2: creaPrenotazione(dati) ---
+
+  public Prenotazione creaPrenotazione(CreaPrenotazioneRequest req) {
+      // Controllo nome
+      if (req.getNomeCliente() == null || req.getNomeCliente().trim().isEmpty()) {
+          throw new RuntimeException("Nome obbligatorio");
+      }
+      // Controllo persone
+      if (req.getPersone() < 1) {
+          throw new RuntimeException("Almeno 1 persona");
+      }
+      // Controllo tavolo se indicato
+      if (req.getTavoloId() != null) {
+          tavoloRepository.findById(req.getTavoloId())
+              .orElseThrow(() -> new RuntimeException("Tavolo non trovato"));
+      }
+
+      Prenotazione p = new Prenotazione();
+      p.setNomeCliente(req.getNomeCliente().trim());
+      p.setOra(LocalTime.parse(req.getOra()));  // "20:00" → LocalTime
+      p.setPersone(req.getPersone());
+      p.setTavoloId(req.getTavoloId());
+      p.setCancellata(false);
+      return prenotazioneRepository.save(p);
+  }
+
+
+--- METODO 3: cancellaPrenotazione(id) ---
+
+  public void cancellaPrenotazione(Long id) {
+      Prenotazione p = prenotazioneRepository.findById(id)
+          .orElseThrow(() -> new RuntimeException("Prenotazione non trovata"));
+      p.setCancellata(true);
+      prenotazioneRepository.save(p);
+  }
+
+
+--- METODO 4: contaPrenotazioniOggi() --- (usato dalla Dashboard)
+
+  public int contaPrenotazioniOggi() {
+      return prenotazioneRepository.countByCancellataFalse();
+  }
+
+
+--- METODO 5: haPrenotazioneVicina(tavoloId) --- (usato da Tavoli)
+
+  public boolean haPrenotazioneVicina(Long tavoloId) {
+      LocalTime adesso = LocalTime.now();
+      LocalTime limite = adesso.plusHours(2);
+      List<Prenotazione> attive = prenotazioneRepository.findByCancellataFalse();
+
+      for (Prenotazione p : attive) {
+          // prenotazione per questo tavolo (o senza tavolo assegnato)
+          boolean stessoTavolo = (p.getTavoloId() == null) 
+              || p.getTavoloId().equals(tavoloId);
+          if (!stessoTavolo) continue;
+
+          LocalTime ora = p.getOra();
+          // ora prenotazione tra adesso e tra 2 ore
+          if (!ora.isBefore(adesso) && !ora.isAfter(limite)) {
+              return true;
+          }
+      }
+      return false;
+  }
+
+
+================================================================================
+  PARTE 4 — ENDPOINT (Controller)
+================================================================================
+
+  GET    /api/prenotazioni?oggi=true
+         → getPrenotazioniOggi()
+
+  POST   /api/prenotazioni
+         Body: {
+           "nomeCliente": "Mario Rossi",
+           "ora": "20:00",
+           "persone": 4,
+           "tavoloId": 7        ← opzionale, togli se "Da assegnare"
+         }
+         → creaPrenotazione()
+
+  DELETE /api/prenotazioni/{id}
+         → cancellaPrenotazione(id)
+
+Esempio Controller:
+  @GetMapping("/prenotazioni")
+  public List<PrenotazioneResponse> lista(@RequestParam boolean oggi) {
+      if (oggi) return prenotazioneService.getPrenotazioniOggi();
+      return List.of();
+  }
+
+  @PostMapping("/prenotazioni")
+  public PrenotazioneResponse crea(@RequestBody CreaPrenotazioneRequest req) {
+      return prenotazioneService.creaPrenotazione(req);
+  }
+
+  @DeleteMapping("/prenotazioni/{id}")
+  public void cancella(@PathVariable Long id) {
+      prenotazioneService.cancellaPrenotazione(id);
+  }
+
+
+================================================================================
+  PARTE 5 — JSON CHE IL FRONTEND SI ASPETTA
+================================================================================
+
+Lista GET /api/prenotazioni?oggi=true:
+  [
+    {
+      "id": 1,
+      "nomeCliente": "Giulia Rossi",
+      "ora": "14:30",
+      "tavoloNumero": 4,
+      "persone": 2
+    },
+    {
+      "id": 2,
+      "nomeCliente": "Marco Bianchi",
+      "ora": "20:00",
+      "tavoloNumero": null,
+      "persone": 4
+    }
+  ]
+
+
+================================================================================
+  PARTE 6 — ORDINE DI LAVORO
+================================================================================
+
+  [ ] 1. Entity Prenotazione + PrenotazioneRepository
+  [ ] 2. creaPrenotazione() — prova POST con Postman
+  [ ] 3. getPrenotazioniOggi()
+  [ ] 4. cancellaPrenotazione()
+  [ ] 5. Inserisci 2-3 prenotazioni demo nel seed
+  [ ] 6. Prova prenotazioni.html
+  [ ] 7. Verifica tavolo arancione su pagina Tavoli
+
+
+================================================================================
+  PARTE 7 — FLUSSO PRATICO
+================================================================================
+
+1. Utente compila form: Mario Rossi, 20:00, 4 pers., Tavolo 7
+2. POST /api/prenotazioni → salva nel database
+3. Pagina si ricarica → Mario compare in lista
+4. Se Tavolo 7 e libero e mancano meno di 2 ore → diventa arancione
+5. Utente clicca "Cancella" → DELETE → cancellata=true → sparisce dalla lista
+
+
+================================================================================
+  PARTE 8 — COSA NON FARE
+================================================================================
+
+  X Prenotazioni per altri giorni (campo data)
+  X Email o SMS di conferma
+  X No-show, conferma arrivo
+  X Cancellare fisicamente la riga dal database
+  X Prenotazione online da clienti esterni
+
+
+================================================================================
+  PARTE 9 — SE TI BLOCHI
+================================================================================
+
+  Errore parsing ora "20:00"?
+  → Usa LocalTime.parse("20:00") — formato HH:mm
+
+  Prenotazione non compare in lista?
+  → Controlla cancellata = false
+
+  Tavolo non diventa arancione?
+  → Controlla haPrenotazioneVicina() e che l'ora sia entro 2 ore
+
+
+================================================================================
+  FINE — Vedi: ROADMAP-TAVOLI.txt (colore arancione)
+  Frontend: dashboard/prenotazioni.html + dashboard/js/prenotazioni.js
+================================================================================

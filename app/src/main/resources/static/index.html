@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<!-- ============================================================
+     DOCUMENTO HTML PRINCIPALE — Dashboard RistoManager
+     Descrizione: Pagina principale MVP — accesso unico, sala unica.
+     Sezioni: KPI, piantina, ordini attivi, prenotazioni (niente extra).
+     ============================================================ -->
+<html lang="it">
+<head>
+    <!-- ========================================================
+         SEZIONE HEAD — Metadati e risorse esterne
+         Descrizione: Configura charset, viewport, titolo e CSS.
+         ======================================================== -->
+    <meta charset="UTF-8">
+    <!-- Viewport: rende la pagina responsive su mobile e tablet -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Titolo mostrato nella scheda del browser -->
+    <title>RistoManager — Dashboard</title>
+    <!-- Font Inter da Google Fonts: tipografia moderna del design -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Foglio di stile principale della dashboard -->
+    <link rel="stylesheet" href="css/style.css?v=12">
+    <link rel="stylesheet" href="css/tavolo-modal.css?v=1">
+</head>
+
+<body>
+    <!-- ========================================================
+         CONTENITORE PRINCIPALE — Layout a due colonne
+         Descrizione: Sidebar fissa a sinistra + area contenuto a destra.
+         ======================================================== -->
+    <div class="app-layout">
+
+        <!-- ====================================================
+             SIDEBAR — Menu di navigazione laterale
+             Descrizione: Barra scura con logo, voci menu e logout.
+             ==================================================== -->
+        <aside class="sidebar" aria-label="Menu di navigazione principale">
+
+            <div class="sidebar__header">
+                <div class="sidebar__logo">
+                    <span class="sidebar__logo-mark" aria-hidden="true">RM</span>
+                    <span class="sidebar__logo-text">RistoManager</span>
+                </div>
+                <button class="sidebar__close-btn" type="button" aria-label="Chiudi menu">✕</button>
+            </div>
+
+            <nav class="sidebar__nav">
+                <ul class="sidebar__menu" id="sidebar-menu"></ul>
+            </nav>
+            <div class="sidebar__footer">
+                <div class="sidebar__clock" aria-live="polite">
+                    <span class="sidebar__clock-time" id="sidebar-time">--:--</span>
+                    <span class="sidebar__clock-date" id="sidebar-date"></span>
+                </div>
+                <button type="button" class="sidebar__chiudi-giornata" data-action="chiudi-giornata">Chiudi Giornata</button>
+            </div>
+        </aside>
+
+        <!-- ====================================================
+             AREA CONTENUTO PRINCIPALE — Tutto il resto della pagina
+             Descrizione: Header, KPI, piantina e widget informativi.
+             ==================================================== -->
+        <main class="main-content">
+
+            <!-- HEADER — Saluto e nome gestionale (MVP: niente ricerca/notifiche) -->
+            <header class="top-header">
+                <div class="top-header__greeting">
+                    <h1 class="top-header__title">Buongiorno 👋</h1>
+                    <p class="top-header__subtitle">Ecco cosa sta succedendo oggi nel tuo ristorante.</p>
+                </div>
+                <div class="top-header__actions">
+                    <div class="user-profile">
+                        <div class="user-profile__avatar" aria-hidden="true">R</div>
+                        <div class="user-profile__info">
+                            <span class="user-profile__name">RistoManager</span>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- ====================================================
+                 SEZIONE KPI — 4 card riassuntive in alto
+                 Descrizione: Metriche chiave della giornata odierna.
+                 ==================================================== -->
+            <section class="kpi-section" aria-label="Indicatori principali">
+
+                <!-- CARD 1 — Incasso giornaliero -->
+                <article class="kpi-card">
+                    <!-- Icona euro su sfondo rosso chiaro -->
+                    <div class="kpi-card__icon kpi-card__icon--red">
+                        <svg viewBox="0 0 24 24" fill="none"><path d="M7 10h8a3 3 0 010 6H9M7 10V6M7 10v8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+                    </div>
+                    <!-- Dati numerici e testo descrittivo -->
+                    <div class="kpi-card__content">
+                        <span class="kpi-card__label">INCASSO OGGI</span>
+                        <span class="kpi-card__value">€ 1.248,00</span>
+                        <!-- MVP: solo totale odierno, niente confronto con ieri -->
+                        <span class="kpi-card__subtext">Ordini pagati oggi</span>
+                    </div>
+                </article>
+
+                <!-- CARD 2 — Tavoli occupati -->
+                <article class="kpi-card">
+                    <!-- Icona sedia su sfondo verde chiaro -->
+                    <div class="kpi-card__icon kpi-card__icon--green">
+                        <svg viewBox="0 0 24 24" fill="none"><path d="M6 10V6a2 2 0 012-2h8a2 2 0 012 2v4M4 10h16v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM8 14v4M16 14v4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+                    </div>
+                    <div class="kpi-card__content">
+                        <span class="kpi-card__label">TAVOLI OCCUPATI</span>
+                        <span class="kpi-card__value">3 / 12</span>
+                        <span class="kpi-card__subtext">35% occupazione</span>
+                    </div>
+                </article>
+
+                <!-- CARD 3 — Ordini attivi -->
+                <article class="kpi-card">
+                    <!-- Icona clipboard su sfondo blu chiaro -->
+                    <div class="kpi-card__icon kpi-card__icon--blue">
+                        <svg viewBox="0 0 24 24" fill="none"><rect x="5" y="3" width="14" height="18" rx="2" stroke="currentColor" stroke-width="2"/><path d="M9 7h6M9 11h6M9 15h4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+                    </div>
+                    <div class="kpi-card__content">
+                        <span class="kpi-card__label">ORDINI ATTIVI</span>
+                        <span class="kpi-card__value">12</span>
+                        <span class="kpi-card__subtext">4 in cucina</span>
+                    </div>
+                </article>
+
+                <!-- CARD 4 — Prenotazioni odierne -->
+                <article class="kpi-card">
+                    <!-- Icona calendario su sfondo arancione chiaro -->
+                    <div class="kpi-card__icon kpi-card__icon--orange">
+                        <svg viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="18" rx="2" stroke="currentColor" stroke-width="2"/><path d="M3 10h18M8 2v4M16 2v4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+                    </div>
+                    <div class="kpi-card__content">
+                        <span class="kpi-card__label">PRENOTAZIONI OGGI</span>
+                        <span class="kpi-card__value">5</span>
+                        <span class="kpi-card__subtext">Per oggi</span>
+                    </div>
+                </article>
+            </section>
+
+            <!-- ====================================================
+                 SEZIONE CENTRALE — Piantina sala + widget laterali
+                 Descrizione: Layout 2/3 piantina tavoli, 1/3 liste.
+                 ==================================================== -->
+            <section class="middle-section">
+
+                <!-- COLONNA SINISTRA — Piantina della sala (unica sala del ristorante) -->
+                <article class="card floor-plan-card">
+                    <!-- Intestazione card: titolo fisso + toggle vista mappa/lista -->
+                    <div class="card__header">
+                        <h2 class="card__title">Sala</h2>
+                    </div>
+
+                    <!-- Area piantina: griglia omogenea 4×3 che copre tutta la sala -->
+                    <div class="floor-plan floor-plan--wood">
+                        <div class="floor-plan__room floor-plan__room--arch">
+                            <div class="floor-plan__arch" aria-hidden="true">
+                                <span class="floor-plan__corner floor-plan__corner--tl"></span>
+                                <span class="floor-plan__corner floor-plan__corner--tr"></span>
+                                <span class="floor-plan__corner floor-plan__corner--bl"></span>
+                                <span class="floor-plan__corner floor-plan__corner--br"></span>
+                                <div class="floor-plan__door floor-plan__door--entry">
+                                    <span class="floor-plan__door-swing"></span>
+                                    <span class="floor-plan__door-label">Ingresso</span>
+                                </div>
+                                <div class="floor-plan__door floor-plan__door--service">
+                                    <span class="floor-plan__door-swing floor-plan__door-swing--left"></span>
+                                </div>
+                            </div>
+                            <div class="floor-plan__pot floor-plan__pot--tl" aria-hidden="true">
+                                <svg class="floor-plan__pot-svg" viewBox="0 0 36 44" fill="none">
+                                    <path d="M10 30h16l-2.2 9H12.2L10 30z" fill="#b85c38"/>
+                                    <path d="M9 27h18l-1 3H10l-1-3z" fill="#d4714a"/>
+                                    <ellipse cx="18" cy="28" rx="9.5" ry="2" fill="#8f4528"/>
+                                    <path d="M18 8c-6 4-9 10-8.5 17 0 4 3.5 6 8.5 6s8.5-2 8.5-6C27 18 24 12 18 8z" fill="#2f6b3e"/>
+                                    <path d="M11 20c2-5 5-8 7-10-1 4-1 8 1 12-3-1-6-1-8-2z" fill="#3d8f52"/>
+                                    <path d="M25 18c-2-4-5-7-7-9 2 3 3 7 2 11 2-1 4-1 5-2z" fill="#256b38"/>
+                                    <path d="M16 14c0 0 2 6 4 10" stroke="#4caf66" stroke-width="1.2" stroke-linecap="round"/>
+                                </svg>
+                            </div>
+                            <div class="floor-plan__pot floor-plan__pot--br" aria-hidden="true">
+                                <svg class="floor-plan__pot-svg floor-plan__pot-svg--tall" viewBox="0 0 36 48" fill="none">
+                                    <path d="M11 34h14l-2 10H13l-2-10z" fill="#9e5a3c"/>
+                                    <path d="M10 31h16l-1.2 3H11.2L10 31z" fill="#c4724f"/>
+                                    <ellipse cx="18" cy="32" rx="8.5" ry="1.8" fill="#7a3f28"/>
+                                    <path d="M18 6c-5 6-7.5 14-6 22 1 5 4.5 7 6 7s5-2 6-7c1.5-8-1-16-6-22z" fill="#3a7d4a"/>
+                                    <path d="M13 22c1-6 3-10 5-13-1 5 0 9 2 13-2-1-4-1-7 0z" fill="#52a062"/>
+                                    <ellipse cx="22" cy="20" rx="5" ry="8" fill="#2d6438" transform="rotate(12 22 20)"/>
+                                </svg>
+                            </div>
+                            <div class="floor-plan__grid">
+
+                            <!-- CELLA 1 — Tavolo 1: libero, tondo -->
+                            <div class="floor-plan__cell">
+                                <div class="table-spot table-spot--circle">
+                                    <span class="table-spot__chair table-spot__chair--n" aria-hidden="true"></span>
+                                    <span class="table-spot__chair table-spot__chair--s" aria-hidden="true"></span>
+                                    <span class="table-spot__chair table-spot__chair--w" aria-hidden="true"></span>
+                                    <span class="table-spot__chair table-spot__chair--e" aria-hidden="true"></span>
+                                    <button class="table table--circle table--free" type="button" aria-label="Tavolo 1, libero">1</button>
+                                </div>
+                            </div>
+
+                            <!-- CELLA 2 — Tavolo 2: occupato, tondo -->
+                            <div class="floor-plan__cell">
+                                <div class="table-spot table-spot--circle">
+                                    <span class="table-spot__chair table-spot__chair--n" aria-hidden="true"></span>
+                                    <span class="table-spot__chair table-spot__chair--s" aria-hidden="true"></span>
+                                    <span class="table-spot__chair table-spot__chair--w" aria-hidden="true"></span>
+                                    <span class="table-spot__chair table-spot__chair--e" aria-hidden="true"></span>
+                                    <button class="table table--circle table--occupied" type="button" aria-label="Tavolo 2, occupato">2</button>
+                                </div>
+                            </div>
+
+                            <!-- CELLA 3 — Tavolo 3: libero, quadrato -->
+                            <div class="floor-plan__cell">
+                                <div class="table-spot table-spot--square">
+                                    <span class="table-spot__chair table-spot__chair--n" aria-hidden="true"></span>
+                                    <span class="table-spot__chair table-spot__chair--s" aria-hidden="true"></span>
+                                    <span class="table-spot__chair table-spot__chair--w" aria-hidden="true"></span>
+                                    <span class="table-spot__chair table-spot__chair--e" aria-hidden="true"></span>
+                                    <button class="table table--square table--free" type="button" aria-label="Tavolo 3, libero">3</button>
+                                </div>
+                            </div>
+
+                            <!-- CELLA 4 — Tavolo 4: libero, rettangolare orizzontale -->
+                            <div class="floor-plan__cell">
+                                <div class="table-spot table-spot--rect-h">
+                                    <span class="table-spot__chair table-spot__chair--n" aria-hidden="true"></span>
+                                    <span class="table-spot__chair table-spot__chair--s" aria-hidden="true"></span>
+                                    <span class="table-spot__chair table-spot__chair--w" aria-hidden="true"></span>
+                                    <span class="table-spot__chair table-spot__chair--e" aria-hidden="true"></span>
+                                    <button class="table table--rect-h table--free" type="button" aria-label="Tavolo 4, libero">4</button>
+                                </div>
+                            </div>
+
+                            <!-- CELLA 5 — Tavolo 5: occupato, quadrato -->
+                            <div class="floor-plan__cell">
+                                <div class="table-spot table-spot--square">
+                                    <span class="table-spot__chair table-spot__chair--n" aria-hidden="true"></span>
+                                    <span class="table-spot__chair table-spot__chair--s" aria-hidden="true"></span>
+                                    <span class="table-spot__chair table-spot__chair--w" aria-hidden="true"></span>
+                                    <span class="table-spot__chair table-spot__chair--e" aria-hidden="true"></span>
+                                    <button class="table table--square table--occupied" type="button" aria-label="Tavolo 5, occupato">5</button>
+                                </div>
+                            </div>
+
+                            <!-- CELLA 6 — Tavolo 6: libero, tondo -->
+                            <div class="floor-plan__cell">
+                                <div class="table-spot table-spot--circle">
+                                    <span class="table-spot__chair table-spot__chair--n" aria-hidden="true"></span>
+                                    <span class="table-spot__chair table-spot__chair--s" aria-hidden="true"></span>
+                                    <span class="table-spot__chair table-spot__chair--w" aria-hidden="true"></span>
+                                    <span class="table-spot__chair table-spot__chair--e" aria-hidden="true"></span>
+                                    <button class="table table--circle table--free" type="button" aria-label="Tavolo 6, libero">6</button>
+                                </div>
+                            </div>
+
+                            <!-- CELLA 7 — Tavolo 7: libero, tondo -->
+                            <div class="floor-plan__cell">
+                                <div class="table-spot table-spot--circle">
+                                    <span class="table-spot__chair table-spot__chair--n" aria-hidden="true"></span>
+                                    <span class="table-spot__chair table-spot__chair--s" aria-hidden="true"></span>
+                                    <span class="table-spot__chair table-spot__chair--w" aria-hidden="true"></span>
+                                    <span class="table-spot__chair table-spot__chair--e" aria-hidden="true"></span>
+                                    <button class="table table--circle table--free" type="button" aria-label="Tavolo 7, libero">7</button>
+                                </div>
+                            </div>
+
+                            <!-- CELLA 8 — Tavolo 8: non disponibile, rettangolare orizzontale -->
+                            <div class="floor-plan__cell">
+                                <div class="table-spot table-spot--rect-h">
+                                    <span class="table-spot__chair table-spot__chair--n" aria-hidden="true"></span>
+                                    <span class="table-spot__chair table-spot__chair--s" aria-hidden="true"></span>
+                                    <button class="table table--rect-h table--unavailable" type="button" aria-label="Tavolo 8, non disponibile" disabled>8</button>
+                                </div>
+                            </div>
+
+                            <!-- CELLA 9 — Tavolo 9: occupato, rettangolare verticale -->
+                            <div class="floor-plan__cell">
+                                <div class="table-spot table-spot--rect-v">
+                                    <span class="table-spot__chair table-spot__chair--w" aria-hidden="true"></span>
+                                    <span class="table-spot__chair table-spot__chair--e" aria-hidden="true"></span>
+                                    <button class="table table--rect-v table--occupied" type="button" aria-label="Tavolo 9, occupato">9</button>
+                                </div>
+                            </div>
+
+                            <!-- CELLA 10 — Tavolo 10: libero, tondo -->
+                            <div class="floor-plan__cell">
+                                <div class="table-spot table-spot--circle">
+                                    <span class="table-spot__chair table-spot__chair--n" aria-hidden="true"></span>
+                                    <span class="table-spot__chair table-spot__chair--s" aria-hidden="true"></span>
+                                    <span class="table-spot__chair table-spot__chair--w" aria-hidden="true"></span>
+                                    <span class="table-spot__chair table-spot__chair--e" aria-hidden="true"></span>
+                                    <button class="table table--circle table--free" type="button" aria-label="Tavolo 10, libero">10</button>
+                                </div>
+                            </div>
+
+                            <!-- CELLA 11 — Tavolo 11: libero, tondo -->
+                            <div class="floor-plan__cell">
+                                <div class="table-spot table-spot--circle">
+                                    <span class="table-spot__chair table-spot__chair--n" aria-hidden="true"></span>
+                                    <span class="table-spot__chair table-spot__chair--s" aria-hidden="true"></span>
+                                    <span class="table-spot__chair table-spot__chair--w" aria-hidden="true"></span>
+                                    <span class="table-spot__chair table-spot__chair--e" aria-hidden="true"></span>
+                                    <button class="table table--circle table--free" type="button" aria-label="Tavolo 11, libero">11</button>
+                                </div>
+                            </div>
+
+                            <!-- CELLA 12 — Tavolo 12: non disponibile, quadrato -->
+                            <div class="floor-plan__cell">
+                                <div class="table-spot table-spot--square">
+                                    <span class="table-spot__chair table-spot__chair--n" aria-hidden="true"></span>
+                                    <span class="table-spot__chair table-spot__chair--s" aria-hidden="true"></span>
+                                    <span class="table-spot__chair table-spot__chair--w" aria-hidden="true"></span>
+                                    <span class="table-spot__chair table-spot__chair--e" aria-hidden="true"></span>
+                                    <button class="table table--square table--unavailable" type="button" aria-label="Tavolo 12, non disponibile" disabled>12</button>
+                                </div>
+                            </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Legenda colori stati tavolo -->
+                    <div class="floor-plan-legend">
+                        <!-- Stato: Libero -->
+                        <span class="floor-plan-legend__item">
+                            <span class="floor-plan-legend__dot floor-plan-legend__dot--free"></span>
+                            Libero
+                        </span>
+                        <!-- Stato: Occupato -->
+                        <span class="floor-plan-legend__item">
+                            <span class="floor-plan-legend__dot floor-plan-legend__dot--occupied"></span>
+                            Occupato
+                        </span>
+                        <!-- Stato: Prenotato -->
+                        <span class="floor-plan-legend__item">
+                            <span class="floor-plan-legend__dot floor-plan-legend__dot--reserved"></span>
+                            Prenotato
+                        </span>
+                        <!-- Stato: Non disponibile -->
+                        <span class="floor-plan-legend__item">
+                            <span class="floor-plan-legend__dot floor-plan-legend__dot--unavailable"></span>
+                            Non disponibile
+                        </span>
+                    </div>
+                </article>
+
+                <!-- COLONNA DESTRA — Widget impilati verticalmente -->
+                <div class="side-widgets">
+
+                    <!-- WIDGET — Lista ordini attivi -->
+                    <article class="card orders-widget">
+                        <!-- Intestazione con titolo e link "Vedi tutti" -->
+                        <div class="card__header">
+                            <h2 class="card__title">Ordini attivi</h2>
+                            <a href="ordini.html" class="card__link">Vedi tutti</a>
+                        </div>
+                        <ul class="orders-list">
+                            <!-- Ordine 1: Tavolo 2, in cucina -->
+                            <li class="orders-list__item">
+                                <div class="orders-list__info">
+                                    <span class="orders-list__table">Tavolo 2</span>
+                                    <span class="orders-list__details">4 piatti · € 42,00</span>
+                                </div>
+                                <!-- Badge stato rosso: In cucina -->
+                                <span class="status-badge status-badge--kitchen">In cucina</span>
+                            </li>
+                            <!-- Ordine 2: Tavolo 9, in cucina (MVP: solo stati Aperto / In cucina) -->
+                            <li class="orders-list__item">
+                                <div class="orders-list__info">
+                                    <span class="orders-list__table">Tavolo 9</span>
+                                    <span class="orders-list__details">2 piatti · € 18,50</span>
+                                </div>
+                                <span class="status-badge status-badge--kitchen">In cucina</span>
+                            </li>
+                            <!-- Ordine 3: Tavolo 12, aperto -->
+                            <li class="orders-list__item">
+                                <div class="orders-list__info">
+                                    <span class="orders-list__table">Tavolo 12</span>
+                                    <span class="orders-list__details">5 piatti · € 68,00</span>
+                                </div>
+                                <!-- Badge stato blu: Aperto -->
+                                <span class="status-badge status-badge--open">Aperto</span>
+                            </li>
+                        </ul>
+                    </article>
+
+                    <!-- WIDGET — Prossime prenotazioni -->
+                    <article class="card reservations-widget">
+                        <div class="card__header">
+                            <h2 class="card__title">Prossime prenotazioni</h2>
+                            <a href="prenotazioni.html" class="card__link">Vedi tutti</a>
+                        </div>
+                        <ul class="reservations-list">
+                            <!-- Prenotazione 1 -->
+                            <li class="reservations-list__item">
+                                <span class="reservations-list__name">Giulia Rossi</span>
+                                <span class="reservations-list__meta">14:30 · Tavolo 4 · 2 pers.</span>
+                            </li>
+                            <!-- Prenotazione 2 -->
+                            <li class="reservations-list__item">
+                                <span class="reservations-list__name">Marco Bianchi</span>
+                                <span class="reservations-list__meta">20:00 · Tavolo 7 · 4 pers.</span>
+                            </li>
+                            <!-- Prenotazione 3 -->
+                            <li class="reservations-list__item">
+                                <span class="reservations-list__name">Sara Verdi</span>
+                                <span class="reservations-list__meta">21:15 · Tavolo 3 · 2 pers.</span>
+                            </li>
+                        </ul>
+                    </article>
+                </div>
+            </section>
+
+        </main>
+    </div>
+    <script src="js/api.js"></script>
+    <script src="js/app.js?v=5"></script>
+    <script src="js/tavolo-modal.js?v=1"></script>
+    <script src="js/dashboard-api.js?v=504"></script>
+</body>
+</html>

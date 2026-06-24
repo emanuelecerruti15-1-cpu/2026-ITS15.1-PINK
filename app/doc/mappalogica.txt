@@ -1,0 +1,717 @@
+```text id="x7v9ov"
+
+ELENCO LOGICA JAVA — FUNZIONI GESTIONALE MVP + SUGGERIMENTO
+
+
+
+1\\. LOGICA PIATTI / MENU
+
+
+
+\\- Creare nuovo piatto
+
+\&#x20; Suggerimento: crea un metodo creaPiatto(nome, prezzo, disponibile) dentro PiattoService.
+
+
+
+\\- Modificare piatto esistente
+
+\&#x20; Suggerimento: cerca il piatto tramite id, aggiorna nome/prezzo/disponibilità e poi restituisci il piatto aggiornato.
+
+
+
+\\- Eliminare piatto
+
+\&#x20; Suggerimento: prima controlla che il piatto esista, poi eliminalo solo se non è usato in ordini attivi.
+
+
+
+\\- Recuperare lista piatti
+
+\&#x20; Suggerimento: crea un metodo getTuttiIPiatti() che restituisce tutti i piatti ordinati per nome.
+
+
+
+\\- Recuperare singolo piatto
+
+\&#x20; Suggerimento: crea getPiattoById(id) e lancia errore se l’id non esiste.
+
+
+
+\\- Controllare nome piatto
+
+\&#x20; Suggerimento: usa una funzione validaNomePiatto(nome) che controlla null, vuoto e spazi.
+
+
+
+\\- Controllare prezzo piatto
+
+\&#x20; Suggerimento: accetta solo prezzo maggiore di 0.
+
+
+
+\\- Controllare disponibilità piatto
+
+\&#x20; Suggerimento: prima di aggiungere un piatto a un ordine verifica piatto.isDisponibile().
+
+
+
+\\- Rendere piatto disponibile / non disponibile
+
+\&#x20; Suggerimento: crea un metodo cambiaDisponibilitaPiatto(id, disponibile).
+
+
+
+
+
+2\\. LOGICA TAVOLI
+
+
+
+\\- Recuperare lista tavoli
+
+\&#x20; Suggerimento: crea getTavoli() in TavoloService e restituisci i tavoli già convertiti in TavoloDTO.
+
+
+
+\\- Recuperare singolo tavolo
+
+\&#x20; Suggerimento: crea getTavolo(id) e includi anche eventuale ordine attivo collegato.
+
+
+
+\\- Controllare se un tavolo è libero
+
+\&#x20; Suggerimento: crea metodo tavoloLibero(tavolo) che ritorna true solo se stato == LIBERO.
+
+
+
+\\- Controllare se un tavolo è occupato
+
+\&#x20; Suggerimento: controlla se stato == OCCUPATO.
+
+
+
+\\- Controllare se un tavolo è prenotato
+
+\&#x20; Suggerimento: controlla se stato == PRENOTATO.
+
+
+
+\\- Controllare se un tavolo è non disponibile
+
+\&#x20; Suggerimento: controlla se stato == NON\\\_DISPONIBILE oppure nonDisponibile == true.
+
+
+
+\\- Cambiare stato tavolo
+
+\&#x20; Suggerimento: crea un metodo unico cambiaStatoTavolo(id, nuovoStato).
+
+
+
+\\- Rendere tavolo non disponibile
+
+\&#x20; Suggerimento: se il tavolo è occupato, impedisci il cambio; se è libero, mettilo NON\\\_DISPONIBILE.
+
+
+
+\\- Rendere tavolo disponibile
+
+\&#x20; Suggerimento: se era NON\\\_DISPONIBILE, riportalo a LIBERO.
+
+
+
+\\- Verificare posti tavolo
+
+\&#x20; Suggerimento: crea verificaCapienza(tavolo, persone) e controlla tavolo.getPosti() >= persone.
+
+
+
+\\- Verificare se il tavolo può ricevere un ordine
+
+\&#x20; Suggerimento: può ricevere ordine solo se è LIBERO oppure PRENOTATO gestito manualmente.
+
+
+
+\\- Verificare se il tavolo può ricevere una prenotazione
+
+\&#x20; Suggerimento: può ricevere prenotazione solo se non è OCCUPATO e non è NON\\\_DISPONIBILE.
+
+
+
+
+
+3\\. LOGICA ORDINI
+
+
+
+\\- Creare nuovo ordine per un tavolo
+
+\&#x20; Suggerimento: crea creaOrdine(tavoloId), controlla il tavolo, crea ordine APERTO e metti tavolo OCCUPATO.
+
+
+
+\\- Recuperare lista ordini attivi
+
+\&#x20; Suggerimento: restituisci solo ordini con stato APERTO o IN\\\_CUCINA.
+
+
+
+\\- Recuperare singolo ordine
+
+\&#x20; Suggerimento: crea getOrdine(id) e includi righe, totale, tavolo e stato.
+
+
+
+\\- Aggiungere piatto a un ordine
+
+\&#x20; Suggerimento: crea aggiungiRiga(ordineId, piattoId, quantita), controlla ordine APERTO e piatto disponibile.
+
+
+
+\\- Modificare quantità di una riga ordine
+
+\&#x20; Suggerimento: se la riga esiste aggiorna quantità; se arriva a 0, rimuovila.
+
+
+
+\\- Rimuovere piatto da un ordine
+
+\&#x20; Suggerimento: elimina la riga ordine e poi ricalcola il totale.
+
+
+
+\\- Calcolare totale ordine
+
+\&#x20; Suggerimento: somma quantita \\\* prezzoUnitario di tutte le righe.
+
+
+
+\\- Controllare se ordine è aperto
+
+\&#x20; Suggerimento: usa ordine.getStato() == APERTO.
+
+
+
+\\- Controllare se ordine è in cucina
+
+\&#x20; Suggerimento: usa ordine.getStato() == IN\\\_CUCINA.
+
+
+
+\\- Controllare se ordine è pagato
+
+\&#x20; Suggerimento: usa ordine.getStato() == PAGATO.
+
+
+
+\\- Inviare ordine in cucina
+
+\&#x20; Suggerimento: consenti il cambio solo se ordine è APERTO e contiene almeno una riga.
+
+
+
+\\- Pagare ordine
+
+\&#x20; Suggerimento: consenti pagamento se ordine è APERTO o IN\\\_CUCINA, poi metti stato PAGATO e libera il tavolo.
+
+
+
+\\- Impedire modifica ordine pagato
+
+\&#x20; Suggerimento: prima di ogni modifica controlla che stato != PAGATO.
+
+
+
+\\- Impedire ordine su tavolo non disponibile
+
+\&#x20; Suggerimento: in creaOrdine controlla sempre lo stato del tavolo.
+
+
+
+\\- Impedire ordine su tavolo già occupato
+
+\&#x20; Suggerimento: cerca se esiste già un ordine attivo associato a quel tavolo.
+
+
+
+\\- Aggiornare stato tavolo quando viene creato ordine
+
+\&#x20; Suggerimento: dentro creaOrdine chiama TavoloService.cambiaStatoTavolo(tavoloId, OCCUPATO).
+
+
+
+\\- Aggiornare stato tavolo quando viene pagato ordine
+
+\&#x20; Suggerimento: dentro pagaOrdine chiama TavoloService.cambiaStatoTavolo(tavoloId, LIBERO).
+
+
+
+
+
+4\\. LOGICA RIGHE ORDINE
+
+
+
+\\- Creare riga ordine
+
+\&#x20; Suggerimento: quando aggiungi un piatto, crea RigaOrdine con piatto, quantità e prezzoUnitario.
+
+
+
+\\- Aggiungere quantità a riga esistente
+
+\&#x20; Suggerimento: se lo stesso piatto è già presente nell’ordine, aumenta la quantità invece di creare doppioni.
+
+
+
+\\- Diminuire quantità
+
+\&#x20; Suggerimento: crea decrementaQuantitaRiga(rigaId, quantitaDaTogliere).
+
+
+
+\\- Eliminare riga se quantità arriva a zero
+
+\&#x20; Suggerimento: dopo la modifica, se quantità <= 0 elimina la riga.
+
+
+
+\\- Calcolare subtotale riga
+
+\&#x20; Suggerimento: crea metodo getSubtotale() che ritorna quantita \\\* prezzoUnitario.
+
+
+
+\\- Controllare quantità
+
+\&#x20; Suggerimento: non accettare quantità <= 0 quando aggiungi una nuova riga.
+
+
+
+\\- Salvare prezzo unitario al momento dell’ordine
+
+\&#x20; Suggerimento: copia il prezzo del piatto dentro RigaOrdine, così se il prezzo del menu cambia l’ordine vecchio resta corretto.
+
+
+
+\\- Impedire piatti non disponibili
+
+\&#x20; Suggerimento: prima di creare RigaOrdine controlla piatto.isDisponibile().
+
+
+
+\\- Aggiornare totale ordine
+
+\&#x20; Suggerimento: dopo ogni modifica alle righe chiama ricalcolaTotale(ordine).
+
+
+
+
+
+5\\. LOGICA PRENOTAZIONI
+
+
+
+\\- Creare nuova prenotazione
+
+\&#x20; Suggerimento: crea creaPrenotazione(nomeCliente, ora, persone, tavoloId).
+
+
+
+\\- Recuperare prenotazioni di oggi
+
+\&#x20; Suggerimento: filtra le prenotazioni usando LocalDate.now().
+
+
+
+\\- Recuperare singola prenotazione
+
+\&#x20; Suggerimento: crea getPrenotazione(id) e restituisci anche dati tavolo se presente.
+
+
+
+\\- Cancellare prenotazione
+
+\&#x20; Suggerimento: cerca prenotazione, libera eventuale tavolo collegato e poi cancella.
+
+
+
+\\- Assegnare tavolo a prenotazione
+
+\&#x20; Suggerimento: controlla disponibilità, capienza e stato del tavolo prima di assegnarlo.
+
+
+
+\\- Rimuovere tavolo da prenotazione
+
+\&#x20; Suggerimento: se la prenotazione viene cancellata o modificata, scollega il tavolo e riportalo LIBERO se non ha ordini attivi.
+
+
+
+\\- Controllare nome cliente
+
+\&#x20; Suggerimento: non accettare nome null, vuoto o solo spazi.
+
+
+
+\\- Controllare numero persone
+
+\&#x20; Suggerimento: persone deve essere maggiore di 0.
+
+
+
+\\- Controllare orario
+
+\&#x20; Suggerimento: usa LocalTime e verifica che il formato sia valido.
+
+
+
+\\- Controllare capienza tavolo
+
+\&#x20; Suggerimento: tavolo.getPosti() deve essere >= persone.
+
+
+
+\\- Impedire prenotazione su tavolo occupato
+
+\&#x20; Suggerimento: se tavolo.stato == OCCUPATO, restituisci errore.
+
+
+
+\\- Impedire prenotazione su tavolo non disponibile
+
+\&#x20; Suggerimento: se tavolo.stato == NON\\\_DISPONIBILE, restituisci errore.
+
+
+
+\\- Impostare tavolo come prenotato
+
+\&#x20; Suggerimento: dopo aver salvato la prenotazione, cambia stato tavolo in PRENOTATO.
+
+
+
+\\- Liberare tavolo quando prenotazione cancellata
+
+\&#x20; Suggerimento: se il tavolo non ha ordine attivo, cambia stato in LIBERO.
+
+
+
+\\- Gestire prenotazione senza tavolo
+
+\&#x20; Suggerimento: permetti tavoloId null e mostra “Da assegnare” nel frontend.
+
+
+
+
+
+6\\. LOGICA DASHBOARD
+
+
+
+\\- Calcolare incasso giornaliero
+
+\&#x20; Suggerimento: somma i totali degli ordini PAGATI nella data di oggi.
+
+
+
+\\- Calcolare numero tavoli totali
+
+\&#x20; Suggerimento: conta tutti i tavoli registrati.
+
+
+
+\\- Calcolare tavoli occupati
+
+\&#x20; Suggerimento: conta i tavoli con stato OCCUPATO.
+
+
+
+\\- Calcolare percentuale occupazione
+
+\&#x20; Suggerimento: tavoliOccupati \\\* 100 / tavoliTotali.
+
+
+
+\\- Calcolare ordini attivi
+
+\&#x20; Suggerimento: conta ordini con stato APERTO o IN\\\_CUCINA.
+
+
+
+\\- Calcolare ordini in cucina
+
+\&#x20; Suggerimento: conta ordini con stato IN\\\_CUCINA.
+
+
+
+\\- Calcolare prenotazioni di oggi
+
+\&#x20; Suggerimento: conta prenotazioni con data == LocalDate.now().
+
+
+
+\\- Recuperare riepilogo tavoli
+
+\&#x20; Suggerimento: riusa TavoloService.getTavoli().
+
+
+
+\\- Recuperare riepilogo ordini attivi
+
+\&#x20; Suggerimento: riusa OrdineService.getOrdiniAttivi().
+
+
+
+\\- Recuperare riepilogo prenotazioni di oggi
+
+\&#x20; Suggerimento: riusa PrenotazioneService.getPrenotazioniOggi().
+
+
+
+\\- Generare dati dashboard
+
+\&#x20; Suggerimento: crea DashboardDTO e riempilo con tutti i valori calcolati.
+
+
+
+
+
+7\\. LOGICA STATI
+
+
+
+\\- Validare passaggio ordine APERTO → IN\\\_CUCINA
+
+\&#x20; Suggerimento: consentilo solo se l’ordine ha almeno una riga.
+
+
+
+\\- Validare passaggio ordine IN\\\_CUCINA → PAGATO
+
+\&#x20; Suggerimento: consentilo sempre se non è già pagato.
+
+
+
+\\- Validare passaggio ordine APERTO → PAGATO
+
+\&#x20; Suggerimento: consentilo se vuoi permettere pagamento diretto senza cucina.
+
+
+
+\\- Impedire passaggi non validi
+
+\&#x20; Suggerimento: crea metodo validaCambioStatoOrdine(statoAttuale, nuovoStato).
+
+
+
+\\- Validare tavolo LIBERO → OCCUPATO
+
+\&#x20; Suggerimento: consentilo quando viene aperto un ordine.
+
+
+
+\\- Validare tavolo LIBERO → PRENOTATO
+
+\&#x20; Suggerimento: consentilo quando viene creata una prenotazione.
+
+
+
+\\- Validare tavolo OCCUPATO → LIBERO
+
+\&#x20; Suggerimento: consentilo solo dopo pagamento ordine.
+
+
+
+\\- Validare tavolo PRENOTATO → LIBERO
+
+\&#x20; Suggerimento: consentilo se prenotazione viene cancellata o conclusa.
+
+
+
+\\- Impedire uso tavoli NON\\\_DISPONIBILI
+
+\&#x20; Suggerimento: controlla questo stato prima di ordini e prenotazioni.
+
+
+
+
+
+8\\. LOGICA VALIDAZIONI GENERALI
+
+
+
+\\- Validare id inesistenti
+
+\&#x20; Suggerimento: crea metodi findOrThrow(id) nei Service.
+
+
+
+\\- Validare campi obbligatori
+
+\&#x20; Suggerimento: controlla null e stringhe vuote prima di creare oggetti.
+
+
+
+\\- Validare numeri negativi
+
+\&#x20; Suggerimento: per prezzo, quantità e persone accetta solo valori > 0.
+
+
+
+\\- Validare valori nulli
+
+\&#x20; Suggerimento: controlla i dati in ingresso prima di usarli.
+
+
+
+\\- Validare stati non ammessi
+
+\&#x20; Suggerimento: usa enum invece di stringhe libere.
+
+
+
+\\- Validare orario
+
+\&#x20; Suggerimento: usa LocalTime e non String dove possibile.
+
+
+
+\\- Validare disponibilità piatti
+
+\&#x20; Suggerimento: centralizza il controllo in PiattoService.
+
+
+
+\\- Validare disponibilità tavoli
+
+\&#x20; Suggerimento: centralizza il controllo in TavoloService.
+
+
+
+\\- Restituire errore se funzione non può essere eseguita
+
+\&#x20; Suggerimento: usa eccezioni tipo IllegalArgumentException o RuntimeException personalizzate.
+
+
+
+
+
+9\\. LOGICA DTO / CONVERSIONE DATI
+
+
+
+\\- Convertire Piatto in PiattoDTO
+
+\&#x20; Suggerimento: crea metodo toPiattoDTO(Piatto p).
+
+
+
+\\- Convertire Tavolo in TavoloDTO
+
+\&#x20; Suggerimento: includi id, numero, posti, forma, stato ed eventuale ordine attivo.
+
+
+
+\\- Convertire Ordine in OrdineDTO
+
+\&#x20; Suggerimento: includi id, tavoloNumero, stato, totale e righe.
+
+
+
+\\- Convertire RigaOrdine in RigaOrdineDTO
+
+\&#x20; Suggerimento: includi nome piatto, quantità, prezzoUnitario e subtotale.
+
+
+
+\\- Convertire Prenotazione in PrenotazioneDTO
+
+\&#x20; Suggerimento: includi nomeCliente, ora, persone, tavoloNumero.
+
+
+
+\\- Convertire riepilogo in DashboardDTO
+
+\&#x20; Suggerimento: crea un oggetto unico con tutti i dati della dashboard.
+
+
+
+\\- Preparare dati leggibili per frontend
+
+\&#x20; Suggerimento: usa gli stessi nomi campo che il JavaScript si aspetta.
+
+
+
+\\- Evitare oggetti interni inutili
+
+\&#x20; Suggerimento: non mandare al frontend entity complete con relazioni complesse.
+
+
+
+
+
+10\\. ORDINE CONSIGLIATO DELLE FUNZIONI
+
+
+
+1\\. Funzioni piatti
+
+\&#x20;  Suggerimento: parti dal CRUD perché è la parte più semplice.
+
+
+
+2\\. Funzioni tavoli
+
+\&#x20;  Suggerimento: crea prima gli stati base e poi i controlli di disponibilità.
+
+
+
+3\\. Funzioni creazione ordine
+
+\&#x20;  Suggerimento: collega ordine e tavolo fin da subito.
+
+
+
+4\\. Funzioni righe ordine
+
+\&#x20;  Suggerimento: aggiungi i piatti all’ordine solo dopo che Menu e Ordini funzionano.
+
+
+
+5\\. Funzioni cambio stato ordine
+
+\&#x20;  Suggerimento: implementa APERTO → IN\\\_CUCINA → PAGATO.
+
+
+
+6\\. Funzioni pagamento ordine
+
+\&#x20;  Suggerimento: dopo pagamento cambia ordine in PAGATO e tavolo in LIBERO.
+
+
+
+7\\. Funzioni prenotazioni
+
+\&#x20;  Suggerimento: gestisci prima prenotazioni semplici, poi assegnazione tavolo.
+
+
+
+8\\. Funzioni dashboard
+
+\&#x20;  Suggerimento: falla alla fine perché dipende da ordini, tavoli e prenotazioni.
+
+
+
+9\\. Funzioni validazione
+
+\&#x20;  Suggerimento: aggiungile mentre sviluppi ogni sezione, non tutte alla fine.
+
+
+
+10\\. Funzioni conversione DTO
+
+\&#x20;  Suggerimento: creale subito quando colleghi il frontend, così mandi dati puliti.
+
+```

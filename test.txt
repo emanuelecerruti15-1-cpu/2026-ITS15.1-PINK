@@ -1,0 +1,104 @@
+========================================================================
+       REGISTRO DEI TEST DI CONTROLLO - TRATTORIA A RÉVA
+========================================================================
+
+Questo registro serve a testare in modo indipendente la componente visiva (HTML) 
+e la componente logica/dinamica (JavaScript) del sito, insieme ai controlli sul Database.
+
+Stati possibili: [SUPERATO] / [FALLITO] / [DA TESTARE]
+
+------------------------------------------------------------------------
+1. GRAFICA IN HTML & INTERFACCIA UTENTE (LATO CLIENT / BROWSER)
+------------------------------------------------------------------------
+
+ID TEST: TC-HTML-001
+COMPONENTE: Visualizzazione Menu a Libro
+DESCRIZIONE: Aprire la pagina del menu e verificare che la struttura del libro 
+             sia centrata, le frecce di navigazione rimangano visibili sopra le pagine 
+             e il testo dei piatti/prezzi sia perfettamente leggibile.
+STATO: [SUPERATO]
+NOTE/ERRORI: 
+
+
+ID TEST: TC-HTML-002
+COMPONENTE: Form "Lascia Recensione"
+DESCRIZIONE: Verificare che tutti i campi di input (Nome, Selettore Stelle, Textarea) 
+             siano visibili a schermo, abbiano i placeholder corretti e che il pulsante 
+             di invio rispetti lo stile grafico e i colori del sito.
+STATO: [SUPERATO]
+NOTE/ERRORI: 
+
+
+ID TEST: TC-HTML-003
+COMPONENTE: Form "Prenotazioni Tavoli"
+DESCRIZIONE: Verificare la presenza visiva dei campi obbligatori per la prenotazione: 
+             Data, Ora, Numero di Coperti, Nome e Telefono. Controllare che il layout 
+             rimanga pulito ed usabile anche da dispositivi Mobile.
+STATO: [SUPERATO]
+NOTE/ERRORI: null
+
+
+------------------------------------------------------------------------
+2. LOGICA IN JAVASCRIPT & INTERFAZZA DINAMICA (COMPORTAMENTO & AJAX)
+------------------------------------------------------------------------
+
+ID TEST: TC-JS-001
+COMPONENTE: Invio Asincrono Feedback (AJAX/Fetch)
+DESCRIZIONE: Compilare il form delle recensioni e premere invio. Verificare che i dati 
+             vengano spediti al server in background, che la pagina NON si ricarichi 
+             e che la nuova recensione appaia istantaneamente in cima alla lista.
+STATO: [SUPERATO]
+NOTE/ERRORI: 
+
+
+ID TEST: TC-JS-002
+COMPONENTE: Integrazione Sistema Prenotazioni
+DESCRIZIONE: Simulare l'invio di una prenotazione. Verificare che JavaScript intercetti 
+             la risposta del server e mostri all'utente un banner visivo di conferma 
+             (es. "Prenotazione Ricevuta!") o di errore in base alla disponibilità.
+STATO: [SUPERATO]
+NOTE/ERRORI: 
+
+
+ID TEST: TC-JS-003
+COMPONENTE: Gestione Caratteri e Crash Visivi
+DESCRIZIONE: Verificare che la funzione "escapeHTML" non faccia crashare lo script 
+             se incontra valori nulli o indefiniti provenienti dal database e che 
+             trasformi i ritorni a capo (\r\n) in tag HTML <br> funzionanti.
+STATO: [SUPERATO]
+NOTE/ERRORI: 
+
+
+------------------------------------------------------------------------
+3. DEBUG SQL & INTEGRITÀ DATI (DATABASE CONNESSO)
+------------------------------------------------------------------------
+
+ID TEST: TC-SQL-001
+COMPONENTE: Sanificazione ed Inserimento Testi Complessi
+DESCRIZIONE: Inserire nel form delle recensioni un testo contenente apici singole, 
+             virgolette (es: l'ottimo "pesto" ligure) e invii a capo. Verificare nel 
+             database tramite phpMyAdmin che la stringa venga salvata senza errori SQL.
+STATO: [NON SUPERATO]
+NOTE/ERRORI: da aggiustare l'apice
+
+
+ID TEST: TC-SQL-002
+COMPONENTE: Formato e Persistenza Data Invio
+DESCRIZIONE: Salvare una recensione e controllare nella tabella 'feedback' che la colonna 
+             'data_invio' registri il timestamp corretto in formato SQL (YYYY-MM-DD) 
+             invece del valore di errore predefinito 0000-00-00.
+STATO: [NON SUPERATO]
+NOTE/ERRORI: non funziona il timestap dell'ora, la data si invece
+
+
+ID TEST: TC-SQL-003
+COMPONENTE: Vincoli e Controllo Robustezza Query
+DESCRIZIONE: Verificare che modificando manualmente i valori della richiesta (es. inserendo 
+             un voto pari a 10 o lasciando campi vuoti), le funzioni PHP blocchino 
+             l'inserimento o rispondano con uno stato di errore JSON appropriato.
+STATO: [SUPERATO]
+NOTE/ERRORI: 
+
+========================================================================
+                       FINE REGISTRO DEI TEST
+======================================================================== 

@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<!-- PAGINA ORDINI — KPI, lista ordini e dettaglio -->
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RistoManager — Ordini</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css?v=12">
+    <link rel="stylesheet" href="css/pages.css?v=4">
+    <link rel="stylesheet" href="css/ordini.css?v=4">
+</head>
+<body>
+    <div class="app-layout">
+
+        <aside class="sidebar" aria-label="Menu di navigazione">
+            <div class="sidebar__header">
+                <div class="sidebar__logo">
+                    <span class="sidebar__logo-mark" aria-hidden="true">RM</span>
+                    <span class="sidebar__logo-text">RistoManager</span>
+                </div>
+                <button class="sidebar__close-btn" type="button" aria-label="Chiudi menu">✕</button>
+            </div>
+            <nav class="sidebar__nav">
+                <ul class="sidebar__menu" id="sidebar-menu"></ul>
+            </nav>
+            <div class="sidebar__footer">
+                <div class="sidebar__clock" aria-live="polite">
+                    <span class="sidebar__clock-time" id="sidebar-time">--:--</span>
+                    <span class="sidebar__clock-date" id="sidebar-date"></span>
+                </div>
+                <button type="button" class="sidebar__chiudi-giornata" data-action="chiudi-giornata">Chiudi Giornata</button>
+            </div>
+        </aside>
+
+        <main class="main-content main-content--ordini">
+            <header class="page-header page-header--ordini">
+                <div>
+                    <h1 class="page-header__title">Ordini attivi</h1>
+                    <p class="page-header__subtitle">Gestisci e monitora tutti gli ordini in corso in tempo reale.</p>
+                </div>
+                <div class="page-header__actions">
+                    <button type="button" class="ordini-notify" id="btn-notifiche" aria-label="Notifiche">
+                        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M15 17h5l-1.4-1.4A2 2 0 0118 14.2V11a6 6 0 00-4.5-5.8V4a1.5 1.5 0 00-3 0v1.2A6 6 0 006 11v3.2c0 .5-.2 1-.6 1.4L4 17h5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M10 20a2 2 0 004 0" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+                        <span class="ordini-notify__badge" id="notify-count">3</span>
+                    </button>
+                    <div class="user-profile user-profile--admin">
+                        <div class="user-profile__avatar" aria-hidden="true">R</div>
+                        <div class="user-profile__info">
+                            <span class="user-profile__name">RistoManager Admin</span>
+                        </div>
+                        <span class="user-profile__chevron" aria-hidden="true">▾</span>
+                    </div>
+                </div>
+            </header>
+
+            <div id="api-notice" class="api-notice is-hidden" role="status"></div>
+
+            <!-- KPI ordini -->
+            <section class="kpi-section kpi-section--ordini" aria-label="Riepilogo ordini">
+                <article class="kpi-card ordini-kpi-card">
+                    <div class="kpi-card__icon kpi-card__icon--blue ordini-kpi-card__icon">
+                        <svg viewBox="0 0 24 24" fill="none"><rect x="5" y="3" width="14" height="18" rx="2" stroke="currentColor" stroke-width="2"/><path d="M9 7h6M9 11h6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+                    </div>
+                    <div class="kpi-card__content">
+                        <span class="kpi-card__label">Ordini aperti</span>
+                        <span class="kpi-card__value" id="kpi-aperti">0</span>
+                        <span class="kpi-card__subtext" id="kpi-aperti-sub">Aggiornato ora</span>
+                    </div>
+                </article>
+                <article class="kpi-card ordini-kpi-card">
+                    <div class="kpi-card__icon kpi-card__icon--red ordini-kpi-card__icon">
+                        <svg viewBox="0 0 24 24" fill="none"><path d="M6 4v4M18 4v4M4 10h16M6 4h12a2 2 0 012 2v12a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2z" stroke="currentColor" stroke-width="2"/><path d="M9 14l2 2 4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    </div>
+                    <div class="kpi-card__content">
+                        <span class="kpi-card__label">In cucina</span>
+                        <span class="kpi-card__value" id="kpi-cucina">0</span>
+                        <span class="kpi-card__subtext" id="kpi-cucina-sub">Tempo medio — min</span>
+                    </div>
+                </article>
+                <article class="kpi-card ordini-kpi-card">
+                    <div class="kpi-card__icon kpi-card__icon--orange ordini-kpi-card__icon">
+                        <svg viewBox="0 0 24 24" fill="none"><rect x="2" y="5" width="20" height="14" rx="2" stroke="currentColor" stroke-width="2"/><path d="M2 10h20" stroke="currentColor" stroke-width="2"/></svg>
+                    </div>
+                    <div class="kpi-card__content">
+                        <span class="kpi-card__label">Da pagare</span>
+                        <span class="kpi-card__value" id="kpi-da-pagare">0</span>
+                        <span class="kpi-card__subtext" id="kpi-da-pagare-sub">Totale € 0,00</span>
+                    </div>
+                </article>
+                <article class="kpi-card ordini-kpi-card">
+                    <div class="kpi-card__icon kpi-card__icon--green ordini-kpi-card__icon">
+                        <svg viewBox="0 0 24 24" fill="none"><path d="M4 18l4-8 4 5 4-9 4 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    </div>
+                    <div class="kpi-card__content">
+                        <span class="kpi-card__label">Incasso oggi</span>
+                        <span class="kpi-card__value kpi-card__value--money" id="kpi-incasso">€ 0,00</span>
+                        <span class="kpi-card__subtext kpi-card__subtext--positive" id="kpi-incasso-sub">—</span>
+                    </div>
+                </article>
+            </section>
+
+            <section class="ordini-layout">
+                <!-- Lista ordini -->
+                <article class="card ordini-list-card">
+                    <div class="ordini-list-toolbar">
+                        <div class="ordini-search">
+                            <svg class="ordini-search__icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="2"/><path d="M20 20l-3-3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+                            <input type="search" class="ordini-search__input" id="ordini-search" placeholder="Cerca per tavolo, ordine o cliente..." autocomplete="off">
+                        </div>
+                        <button type="button" class="ordini-btn ordini-btn--outline ordini-btn--icon" id="btn-filtri-avanzati" aria-label="Filtri avanzati">
+                            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 6h16M7 12h10M10 18h4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+                            Filtri
+                        </button>
+                    </div>
+
+                    <div class="ordini-chips" role="group" aria-label="Filtra per stato ordine">
+                        <button type="button" class="ordini-chip ordini-chip--active" data-filtro="TUTTI">Tutti</button>
+                        <button type="button" class="ordini-chip" data-filtro="APERTO"><span class="ordini-chip__dot ordini-chip__dot--open"></span>Aperti</button>
+                        <button type="button" class="ordini-chip" data-filtro="IN_CUCINA"><span class="ordini-chip__dot ordini-chip__dot--kitchen"></span>In cucina</button>
+                        <button type="button" class="ordini-chip" data-filtro="PRONTO"><span class="ordini-chip__dot ordini-chip__dot--ready"></span>Pronti</button>
+                        <button type="button" class="ordini-chip" data-filtro="DA_PAGARE"><span class="ordini-chip__dot ordini-chip__dot--pay"></span>Da pagare</button>
+                    </div>
+
+                    <div class="ordini-list" id="lista-ordini" role="list"></div>
+
+                    <footer class="ordini-pagination">
+                        <p class="ordini-pagination__info" id="pagination-info">Mostra 0 di 0 ordini</p>
+                        <nav class="ordini-pagination__nav" id="pagination-nav" aria-label="Paginazione ordini"></nav>
+                    </footer>
+                </article>
+
+                <!-- Dettaglio ordine -->
+                <aside class="card ordine-detail" id="pannello-ordine">
+                    <div id="ordine-vuoto" class="ordine-detail__empty">
+                        <p>Seleziona un ordine<br>dalla lista</p>
+                    </div>
+
+                    <div id="ordine-contenuto" class="ordine-detail__body is-hidden">
+                        <div class="ordine-detail__header">
+                            <div class="ordine-detail__head-main">
+                                <h2 class="ordine-detail__title" id="ordine-titolo">Tavolo 5</h2>
+                                <p class="ordine-detail__id" id="ordine-numero">Ordine #1024</p>
+                            </div>
+                            <div class="ordine-detail__head-actions">
+                                <span class="status-badge" id="ordine-badge">Aperto</span>
+                                <button type="button" class="ordine-detail__menu-btn" id="ordine-menu-btn" aria-label="Altre opzioni ordine">⋯</button>
+                            </div>
+                        </div>
+
+                        <div class="ordine-detail__meta">
+                            <div class="ordine-detail__meta-item">
+                                <span class="ordine-detail__meta-label">Coperti</span>
+                                <strong id="ordine-coperti">—</strong>
+                            </div>
+                            <div class="ordine-detail__meta-item">
+                                <span class="ordine-detail__meta-label">Aperto alle</span>
+                                <strong id="ordine-orario">—</strong>
+                            </div>
+                            <div class="ordine-detail__meta-item">
+                                <span class="ordine-detail__meta-label">Cameriere</span>
+                                <strong id="ordine-cameriere">—</strong>
+                            </div>
+                            <div class="ordine-detail__meta-item">
+                                <span class="ordine-detail__meta-label">Note</span>
+                                <strong id="ordine-note">—</strong>
+                            </div>
+                        </div>
+
+                        <div class="ordine-detail__table-wrap">
+                            <table class="ordine-detail__table">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Piatto</th>
+                                        <th scope="col">Q.tà</th>
+                                        <th scope="col">Prezzo</th>
+                                        <th scope="col">Totale</th>
+                                        <th scope="col"><span class="sr-only">Azioni</span></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="ordine-righe"></tbody>
+                            </table>
+                        </div>
+
+                        <div class="ordine-detail__add" id="form-aggiungi">
+                            <p class="ordine-detail__add-label">Aggiungi piatto</p>
+                            <div class="ordine-detail__add-row">
+                                <select class="ordine-detail__select" id="select-piatto" aria-label="Seleziona piatto">
+                                    <option value="">Seleziona un piatto...</option>
+                                </select>
+                                <div class="ordine-qty" aria-label="Quantità">
+                                    <button type="button" class="ordine-qty__btn" id="qty-minus" aria-label="Diminuisci quantità">−</button>
+                                    <span class="ordine-qty__value" id="qty-value">1</span>
+                                    <button type="button" class="ordine-qty__btn" id="qty-plus" aria-label="Aumenta quantità">+</button>
+                                </div>
+                                <button type="button" class="ordini-btn ordini-btn--dark" id="btn-aggiungi-riga">Aggiungi</button>
+                            </div>
+                        </div>
+
+                        <div class="ordine-detail__totals">
+                            <div class="ordine-detail__total-row">
+                                <span>Subtotale</span>
+                                <span id="ordine-subtotale">€ 0,00</span>
+                            </div>
+                            <div class="ordine-detail__total-row">
+                                <span id="ordine-coperto-label">Coperto</span>
+                                <span id="ordine-coperto">€ 0,00</span>
+                            </div>
+                            <div class="ordine-detail__total-row ordine-detail__total-row--grand">
+                                <span>Totale</span>
+                                <strong id="ordine-totale">€ 0,00</strong>
+                            </div>
+                        </div>
+
+                        <div class="ordine-detail__actions" id="ordine-azioni">
+                            <button type="button" class="ordini-btn ordini-btn--danger-outline" id="btn-annulla">
+                                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 7h16M9 7V5a1 1 0 011-1h4a1 1 0 011 1v2M10 11v6M14 11v6M6 7l1 14h10l1-14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+                                Annulla ordine
+                            </button>
+                            <button type="button" class="ordini-btn ordini-btn--kitchen" id="btn-in-cucina">
+                                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 4v4M18 4v4M4 10h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><rect x="4" y="10" width="16" height="10" rx="2" stroke="currentColor" stroke-width="2"/></svg>
+                                Invia in cucina
+                            </button>
+                            <button type="button" class="ordini-btn ordini-btn--ready" id="btn-pronto">
+                                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                                Segna come pronto
+                            </button>
+                            <button type="button" class="ordini-btn ordini-btn--primary" id="btn-paga">
+                                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="2" y="5" width="20" height="14" rx="2" stroke="currentColor" stroke-width="2"/><path d="M2 10h20" stroke="currentColor" stroke-width="2"/></svg>
+                                Paga conto
+                            </button>
+                        </div>
+                    </div>
+                </aside>
+            </section>
+
+            <!-- Storico ordini chiusi e pagati -->
+            <section class="card ordini-storico" aria-label="Storico ordini chiusi">
+                <div class="ordini-storico__header">
+                    <div>
+                        <h2 class="ordini-storico__title">Storico ordini chiusi</h2>
+                        <p class="ordini-storico__subtitle">Elenco degli ordini completati, dal più recente al più vecchio.</p>
+                    </div>
+                    <div class="ordini-storico__filtri" role="group" aria-label="Filtra per periodo">
+                        <button type="button" class="ordini-storico__filtro ordini-storico__filtro--active" data-periodo="OGGI">Oggi</button>
+                        <button type="button" class="ordini-storico__filtro" data-periodo="IERI">Ieri</button>
+                        <button type="button" class="ordini-storico__filtro" data-periodo="SETTIMANA">Settimana</button>
+                        <button type="button" class="ordini-storico__filtro" data-periodo="TUTTI">Tutti</button>
+                        <button type="button" class="ordini-storico__filtro ordini-storico__filtro--icon" id="btn-calendario-storico" aria-label="Scegli data">
+                            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2" stroke="currentColor" stroke-width="2"/><path d="M3 10h18M8 2v4M16 2v4" stroke="currentColor" stroke-width="2"/></svg>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="ordini-storico__table-wrap">
+                    <table class="ordini-storico__table">
+                        <thead>
+                            <tr>
+                                <th scope="col">Ora chiusura</th>
+                                <th scope="col">Ordine</th>
+                                <th scope="col">Tavolo</th>
+                                <th scope="col">Cliente</th>
+                                <th scope="col">Totale</th>
+                                <th scope="col">Metodo pagamento</th>
+                                <th scope="col">Stato</th>
+                                <th scope="col"><span class="sr-only">Azioni</span></th>
+                            </tr>
+                        </thead>
+                        <tbody id="storico-ordini-body"></tbody>
+                    </table>
+                </div>
+
+                <footer class="ordini-storico__footer">
+                    <button type="button" class="ordini-storico__more" id="btn-mostra-altri-storico">
+                        Mostra altri ordini
+                        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    </button>
+                </footer>
+            </section>
+        </main>
+    </div>
+
+    <!-- Modale riepilogo ordine chiuso -->
+    <div id="modal-storico" class="ordini-modal is-hidden" role="dialog" aria-modal="true" aria-labelledby="modal-storico-titolo">
+        <div class="ordini-modal__backdrop" id="modal-storico-backdrop"></div>
+        <div class="ordini-modal__panel card">
+            <div class="ordine-detail__header">
+                <div class="ordine-detail__head-main">
+                    <h2 class="ordine-detail__title" id="modal-storico-titolo">Tavolo —</h2>
+                    <p class="ordine-detail__id" id="modal-storico-numero">Ordine #—</p>
+                </div>
+                <div class="ordine-detail__head-actions">
+                    <span class="status-badge status-badge--paid" id="modal-storico-badge">Pagato</span>
+                    <button type="button" class="ordine-detail__menu-btn" id="modal-storico-chiudi" aria-label="Chiudi riepilogo">✕</button>
+                </div>
+            </div>
+
+            <div class="ordine-detail__meta">
+                <div class="ordine-detail__meta-item">
+                    <span class="ordine-detail__meta-label">Coperti</span>
+                    <strong id="modal-storico-coperti">—</strong>
+                </div>
+                <div class="ordine-detail__meta-item">
+                    <span class="ordine-detail__meta-label">Chiuso alle</span>
+                    <strong id="modal-storico-chiusura">—</strong>
+                </div>
+                <div class="ordine-detail__meta-item">
+                    <span class="ordine-detail__meta-label">Cameriere</span>
+                    <strong id="modal-storico-cameriere">—</strong>
+                </div>
+                <div class="ordine-detail__meta-item">
+                    <span class="ordine-detail__meta-label">Pagamento</span>
+                    <strong id="modal-storico-pagamento">—</strong>
+                </div>
+            </div>
+
+            <div class="ordine-detail__table-wrap">
+                <table class="ordine-detail__table">
+                    <thead>
+                        <tr>
+                            <th scope="col">Piatto</th>
+                            <th scope="col">Q.tà</th>
+                            <th scope="col">Prezzo</th>
+                            <th scope="col">Totale</th>
+                        </tr>
+                    </thead>
+                    <tbody id="modal-storico-righe"></tbody>
+                </table>
+            </div>
+
+            <div class="ordine-detail__totals ordine-detail__totals--modal">
+                <div class="ordine-detail__total-row">
+                    <span>Subtotale</span>
+                    <span id="modal-storico-subtotale">€ 0,00</span>
+                </div>
+                <div class="ordine-detail__total-row">
+                    <span id="modal-storico-coperto-label">Coperto</span>
+                    <span id="modal-storico-coperto">€ 0,00</span>
+                </div>
+                <div class="ordine-detail__total-row ordine-detail__total-row--grand">
+                    <span>Totale pagato</span>
+                    <strong id="modal-storico-totale">€ 0,00</strong>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script src="js/app.js?v=5"></script>
+    <script src="js/ordini.js?v=6"></script>
+</body>
+</html>

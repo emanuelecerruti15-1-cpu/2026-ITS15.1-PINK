@@ -1,0 +1,313 @@
+/* Modale riepilogo e gestione tavolo */
+
+.tavolo-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 1250;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.tavolo-modal.is-hidden {
+    display: none;
+}
+
+.tavolo-modal__backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.45);
+}
+
+.tavolo-modal__panel {
+    position: relative;
+    width: min(560px, 100%);
+    max-height: calc(100vh - 40px);
+    overflow-y: auto;
+    background: #fff;
+    border-radius: 18px;
+    padding: 24px;
+    box-shadow: 0 24px 60px rgba(15, 23, 42, 0.18);
+}
+
+.tavolo-modal__header {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    margin-bottom: 22px;
+    padding-right: 28px;
+}
+
+.tavolo-modal__icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    background: #dcfce7;
+    color: #16a34a;
+}
+
+.tavolo-modal__icon svg {
+    width: 24px;
+    height: 24px;
+}
+
+.tavolo-modal__icon--occupied { background: #fee2e2; color: #dc2626; }
+.tavolo-modal__icon--reserved { background: #ffedd5; color: #ea580c; }
+.tavolo-modal__icon--unavailable { background: #f1f5f9; color: #64748b; }
+
+.tavolo-modal__head-text {
+    min-width: 0;
+}
+
+.tavolo-modal__title {
+    margin: 0;
+    font-size: 22px;
+    font-weight: 700;
+    color: #1a202c;
+    line-height: 1.2;
+}
+
+.tavolo-modal__subtitle {
+    margin: 4px 0 0;
+    font-size: 14px;
+    color: #718096;
+}
+
+.tavolo-modal__close {
+    position: absolute;
+    top: 18px;
+    right: 18px;
+    width: 32px;
+    height: 32px;
+    border: none;
+    border-radius: 8px;
+    background: transparent;
+    color: #718096;
+    font-size: 18px;
+    cursor: pointer;
+}
+
+.tavolo-modal__close:hover {
+    background: #f7fafc;
+    color: #1a202c;
+}
+
+.tavolo-modal__grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+.tavolo-modal__info {
+    padding: 14px 16px;
+    border-radius: 12px;
+    background: #f8fafc;
+    border: 1px solid #edf2f7;
+}
+
+.tavolo-modal__info--wide {
+    grid-column: 1 / -1;
+}
+
+.tavolo-modal__info-label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    color: #718096;
+    margin-bottom: 6px;
+}
+
+.tavolo-modal__info-label svg {
+    width: 14px;
+    height: 14px;
+    flex-shrink: 0;
+}
+
+.tavolo-modal__info-value {
+    font-size: 15px;
+    font-weight: 600;
+    color: #1a202c;
+}
+
+.tavolo-modal__info-value--stato {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.tavolo-modal__stato-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.tavolo-modal__stato-dot--libero { background: #22c55e; }
+.tavolo-modal__stato-dot--occupato { background: #ef4444; }
+.tavolo-modal__stato-dot--prenotato { background: #f97316; }
+.tavolo-modal__stato-dot--non-disp { background: #94a3b8; }
+
+.tavolo-modal__section-title {
+    margin: 22px 0 12px;
+    font-size: 15px;
+    font-weight: 700;
+    color: #1a202c;
+}
+
+.tavolo-modal__stati {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 10px;
+}
+
+.tavolo-modal__stato-btn {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    padding: 14px 8px;
+    border: 2px solid #e2e8f0;
+    border-radius: 14px;
+    background: #fff;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 600;
+    color: #4a5568;
+    transition: border-color 0.15s, background 0.15s, box-shadow 0.15s;
+}
+
+.tavolo-modal__stato-btn:hover {
+    border-color: #cbd5e0;
+    background: #f8fafc;
+}
+
+.tavolo-modal__stato-btn.is-selected {
+    border-color: currentColor;
+    box-shadow: 0 0 0 1px currentColor;
+}
+
+.tavolo-modal__stato-btn--libero { color: #16a34a; }
+.tavolo-modal__stato-btn--occupato { color: #dc2626; }
+.tavolo-modal__stato-btn--prenotato { color: #ea580c; }
+.tavolo-modal__stato-btn--non-disp { color: #64748b; }
+
+.tavolo-modal__stato-btn.is-selected.tavolo-modal__stato-btn--libero { background: #f0fdf4; }
+.tavolo-modal__stato-btn.is-selected.tavolo-modal__stato-btn--occupato { background: #fef2f2; }
+.tavolo-modal__stato-btn.is-selected.tavolo-modal__stato-btn--prenotato { background: #fff7ed; }
+.tavolo-modal__stato-btn.is-selected.tavolo-modal__stato-btn--non-disp { background: #f8fafc; }
+
+.tavolo-modal__stato-btn__icon {
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.tavolo-modal__stato-btn__icon svg {
+    width: 22px;
+    height: 22px;
+}
+
+.tavolo-modal__stato-btn__check {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: currentColor;
+    color: #fff;
+    font-size: 11px;
+    line-height: 18px;
+    text-align: center;
+    opacity: 0;
+    transform: scale(0.8);
+    transition: opacity 0.15s, transform 0.15s;
+}
+
+.tavolo-modal__stato-btn.is-selected .tavolo-modal__stato-btn__check {
+    opacity: 1;
+    transform: scale(1);
+}
+
+.tavolo-modal__hint {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    margin-top: 12px;
+    padding: 10px 12px;
+    border-radius: 10px;
+    background: #f8fafc;
+    font-size: 12px;
+    color: #64748b;
+    line-height: 1.45;
+}
+
+.tavolo-modal__hint svg {
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+    margin-top: 1px;
+}
+
+.tavolo-modal__hint.is-hidden {
+    display: none;
+}
+
+.tavolo-modal__actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 24px;
+    padding-top: 4px;
+}
+
+.tavolo-modal__btn {
+    padding: 10px 18px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    font-family: inherit;
+}
+
+.tavolo-modal__btn--ghost {
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    color: #4a5568;
+}
+
+.tavolo-modal__btn--ghost:hover {
+    background: #f7fafc;
+}
+
+.tavolo-modal__btn--primary {
+    background: #16a34a;
+    color: #fff;
+}
+
+.tavolo-modal__btn--primary:hover {
+    background: #15803d;
+}
+
+.tavolo-modal__btn--primary:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+@media (max-width: 600px) {
+    .tavolo-modal__stati {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}

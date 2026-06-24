@@ -1,0 +1,305 @@
+================================================================================
+  RistoManager — ROADMAP LOGICA MENU (per principianti Java)
+================================================================================
+
+A chi serve: a capire come gestire l'elenco piatti del ristorante.
+
+Pagina frontend: dashboard/menu.html (gia pronta)
+File Java: PiattoController.java, PiattoService.java
+
+Regola d'oro: il menu e una lista semplice — nome + prezzo + disponibile.
+              Quando "elimini" un piatto, metti disponibile = false (soft delete).
+
+
+================================================================================
+  PARTE 0 — COSA FA QUESTA SEZIONE
+================================================================================
+
+Il Menu serve a:
+  - Vedere tutti i piatti con prezzo
+  - Aggiungere un nuovo piatto
+  - Modificare nome/prezzo di un piatto esistente
+  - Disattivare un piatto (non compare piu negli ordini)
+
+I piatti del menu vengono usati anche quando:
+  - Aggiungi righe a un ordine (ROADMAP-ORDINI.txt)
+  - Scegli piatto nel dropdown pagina Ordini
+
+
+================================================================================
+  PARTE 1 — TABELLA piatto
+================================================================================
+
+Campi:
+  - id           → identificativo
+  - nome         → es. "Pizza Margherita"
+  - prezzo       → es. 8.00 (usa double o BigDecimal)
+  - disponibile  → true = si puo ordinare, false = nascosto
+
+Come si fa in Java:
+  @Entity
+  public class Piatto {
+      @Id @GeneratedValue
+      private Long id;
+      private String nome;
+      private double prezzo;
+      private boolean disponibile = true;
+      // getter e setter...
+  }
+
+
+================================================================================
+  PARTE 2 — COSA DEVE FARE OGNI PEZZO DELLA PAGINA
+================================================================================
+
+--- PEZZO 1: Tabella piatti ---
+Mostra: nome, prezzo, stato (Disponibile / Non disp.), pulsanti Modifica/Elimina
+
+
+--- PEZZO 2: Form "Aggiungi piatto" ---
+Campi: nome + prezzo
+Crea nuovo record con disponibile = true
+
+
+--- PEZZO 3: Form "Modifica piatto" ---
+Stessi campi + select disponibile si/no
+Aggiorna record esistente per id
+
+
+--- PEZZO 4: Pulsante "Elimina" ---
+NON cancella dal database.
+Mette disponibile = false.
+
+
+================================================================================
+  PARTE 3 — METODI PRINCIPALI
+================================================================================
+
+--- METODO 1: getAllPiatti() ---
+Restituisce TUTTI i piatti (anche non disponibili) per la pagina Menu.
+
+  public List<PiattoResponse> getAllPiatti() {
+      List<Piatto> lista = piattoRepository.findAll();
+      List<PiattoResponse> risposta = new ArrayList<>();
+      for (Piatto p : lista) {
+          PiattoResponse r = new PiattoResponse();
+          r.setId(p.getId());
+          r.setNome(p.getNome());
+          r.setPrezzo(p.getPrezzo());
+          r.setDisponibile(p.isDisponibile());
+          risposta.add(r);
+      }
+      return risposta;
+  }
+
+
+--- METODO 2: getPiattiDisponibili() ---
+Solo piatti con disponibile = true — usato negli ordini.
+
+  public List<PiattoResponse> getPiattiDisponibili() {
+      List<Piatto> lista = piattoRepository.findByDisponibileTrue();
+      // stesso ciclo di sopra...
+  }
+
+
+--- METODO 3: creaPiatto(nome, prezzo) ---
+
+  public Piatto creaPiatto(String nome, double prezzo) {
+      if (nome == null || nome.trim().isEmpty()) {
+          throw new RuntimeException("Nome obbligatorio");
+      }
+      if (prezzo < 0) {
+          throw new RuntimeException("Prezzo non valido");
+      }
+      Piatto p = new Piatto();
+      p.setNome(nome.trim());
+      p.setPrezzo(prezzo);
+      p.setDisponibile(true);
+      return piattoRepository.save(p);
+  }
+
+
+--- METODO 4: modificaPiatto(id, nome, prezzo, disponibile) ---
+
+  public Piatto modificaPiatto(Long id, String nome, double prezzo, boolean disp) {
+      Piatto p = piattoRepository.findById(id)
+          .orElseThrow(() -> new RuntimeException("Piatto non trovato"));
+      if (nome != null && !nome.trim().isEmpty()) {
+          p.setNome(nome.trim());
+      }
+      if (prezzo >= 0) {
+          p.setPrezzo(prezzo);
+      }
+      p.setDisponibile(disp);
+      return piattoRepository.save(p);
+  }
+
+
+--- METODO 5: eliminaPiatto(id) --- (soft delete)
+
+  public void eliminaPiatto(Long id) {
+      Piatto p = piattoRepository.findById(id)
+          .orElseThrow(() -> new RuntimeException("Piatto non trovato"));
+      p.setDisponibile(false);
+      piattoRepository.save(p);
+  }
+
+
+--- METODO 6: trovaPiatto(id) --- (usato quando aggiungi riga ordine)
+
+  public Piatto trovaPiatto(Long id) {
+      return piattoRepository.findById(id)
+          .orElseThrow(() -> new RuntimeException("Piatto non trovato"));
+  }
+
+
+================================================================================
+  PARTE 4 — ENDPOINT (Controller)
+================================================================================
+
+  GET    /api/piatti
+         → getAllPiatti()  (pagina Menu mostra tutti)
+         Opzionale: ?disponibili=true → solo disponibili (per ordini)
+
+  POST   /api/piatti
+         Body: { "nome": "Lasagne", "prezzo": 11.50 }
+         → creaPiatto()
+
+  PUT    /api/piatti/{id}
+         Body: { "nome": "Lasagne", "prezzo": 12.00, "disponibile": true }
+         → modificaPiatto()
+
+  DELETE /api/piatti/{id}
+         → eliminaPiatto()  (disponibile = false)
+
+Esempio Controller:
+  @RestController
+  @RequestMapping("/api/piatti")
+  public class PiattoController {
+
+      @Autowired PiattoService piattoService;
+
+      @GetMapping
+      public List<PiattoResponse> lista(
+          @RequestParam(required = false) Boolean disponibili) {
+          if (Boolean.TRUE.equals(disponibili)) {
+              return piattoService.getPiattiDisponibili();
+          }
+          return piattoService.getAllPiatti();
+      }
+
+      @PostMapping
+      public PiattoResponse crea(@RequestBody CreaPiattoRequest req) {
+          return piattoService.creaPiatto(req.getNome(), req.getPrezzo());
+      }
+
+      @PutMapping("/{id}")
+      public PiattoResponse modifica(@PathVariable Long id,
+          @RequestBody ModificaPiattoRequest req) {
+          return piattoService.modificaPiatto(
+              id, req.getNome(), req.getPrezzo(), req.isDisponibile());
+      }
+
+      @DeleteMapping("/{id}")
+      public void elimina(@PathVariable Long id) {
+          piattoService.eliminaPiatto(id);
+      }
+  }
+
+
+================================================================================
+  PARTE 5 — JSON ESEMPIO
+================================================================================
+
+GET /api/piatti:
+  [
+    { "id": 1, "nome": "Pizza Margherita", "prezzo": 8.00, "disponibile": true },
+    { "id": 2, "nome": "Carbonara", "prezzo": 12.00, "disponibile": true },
+    { "id": 5, "nome": "Piatto rimosso", "prezzo": 10.00, "disponibile": false }
+  ]
+
+
+================================================================================
+  PARTE 6 — DATI DI PROVA (seed)
+================================================================================
+
+Inserisci all'avvio se tabella vuota:
+
+  Piatto("Pizza Margherita",     8.00)
+  Piatto("Spaghetti Carbonara",  12.00)
+  Piatto("Insalata mista",       9.25)
+  Piatto("Tiramisu",             6.00)
+  Piatto("Cotoletta Milanese",  14.00)
+  Piatto("Acqua 0.5L",           2.00)
+  Piatto("Caffe",                1.50)
+
+
+================================================================================
+  PARTE 7 — ORDINE DI LAVORO
+================================================================================
+
+  [ ] 1. Entity Piatto + PiattoRepository
+  [ ] 2. Seed con 5-10 piatti
+  [ ] 3. GET /api/piatti
+  [ ] 4. POST /api/piatti
+  [ ] 5. PUT /api/piatti/{id}
+  [ ] 6. DELETE /api/piatti/{id}
+  [ ] 7. Prova menu.html
+  [ ] 8. Verifica che piatti disattivati NON compaiano in ordini
+
+
+================================================================================
+  PARTE 8 — COLLEGAMENTO CON ORDINI
+================================================================================
+
+Quando aggiungi riga ordine (ROADMAP-ORDINI.txt):
+
+  1. Frontend manda piattoId
+  2. OrdineService chiama piattoService.trovaPiatto(piattoId)
+  3. Se piatto.disponibile == false → ERRORE
+  4. Copia piatto.prezzo in riga_ordine.prezzo_unitario
+
+Perche copiare il prezzo?
+  Se domani la Pizza costa 9€, gli ordini di oggi restano a 8€.
+
+
+================================================================================
+  PARTE 9 — FLUSSO PRATICO
+================================================================================
+
+1. Apri pagina Menu → GET /api/piatti → vedi tabella
+2. Compili "Lasagne" 11.50 → POST → compare in tabella
+3. Clicchi Modifica su Carbonara → cambi prezzo a 13 → PUT
+4. Clicchi Elimina su Tiramisu → DELETE → disponibile=false
+5. Vai su Ordini → Tiramisu non compare nel dropdown piatti
+
+
+================================================================================
+  PARTE 10 — COSA NON FARE
+================================================================================
+
+  X Categorie (Antipasti, Primi, Secondi...)
+  X Immagini piatti
+  X Ingredienti e allergeni
+  X Eliminare fisicamente dal database (usa disponibile=false)
+  X Modificare prezzo degli ordini gia chiusi
+
+
+================================================================================
+  PARTE 11 — SE TI BLOCHI
+================================================================================
+
+  Piatto eliminato ma compare ancora negli ordini?
+  → getPiattiDisponibili() deve filtrare disponibile=true
+
+  Prezzo con troppi decimali?
+  → Usa Math.round(prezzo * 100) / 100.0 oppure BigDecimal (avanzato)
+
+  POST non salva?
+  → Controlla che il JSON abbia "nome" e "prezzo" con nomi giusti
+
+
+================================================================================
+  FINE — Vedi: ROADMAP-ORDINI.txt (usa i piatti negli ordini)
+  Frontend: dashboard/menu.html + dashboard/js/menu.js
+================================================================================

@@ -1,0 +1,152 @@
+================================================================================
+  COME APRIRE IL PROGETTO JAVA SU NETBEANS
+================================================================================
+
+PROBLEMA RISOLTO:
+  Prima c'era solo il frontend (HTML/CSS/JS) e i documenti.
+  NetBeans apre progetti JAVA — serve la cartella "backend" con pom.xml.
+
+STRUTTURA ATTUALE:
+  GestionaleRistorante/
+  ├── backend/          ← APRI QUESTA in NetBeans (progetto Java)
+  ├── dashboard/        ← frontend HTML (si apre nel browser)
+  └── docs/             ← guide e roadmap
+
+
+================================================================================
+  PASSO 1 — REQUISITI
+================================================================================
+
+  1. Java JDK 17 o superiore installato
+     Verifica: apri terminale e scrivi   java -version
+
+  2. NetBeans 17+ (o versione recente con supporto Maven)
+
+  3. Maven (di solito gia incluso in NetBeans)
+
+
+================================================================================
+  PASSO 2 — APRIRE IL PROGETTO IN NETBEANS
+================================================================================
+
+  1. Avvia NetBeans
+
+  2. Menu: File → Open Project  (oppure Ctrl+Shift+O)
+
+  3. Vai nella cartella:
+     C:\Users\I.T.S. LUCA\Desktop\GestionaleRistorante\backend
+
+  4. NetBeans deve mostrare l'icona MAVEN con nome "ristomanager-backend"
+     Se vedi solo una cartella grigia, clicca su "backend" e controlla
+     che dentro ci sia il file pom.xml
+
+  5. Clicca "Open Project"
+
+  IMPORTANTE: NON aprire la cartella GestionaleRistorante (quella principale).
+              Apri solo la sottocartella "backend".
+
+
+================================================================================
+  PASSO 3 — AVVIARE IL SERVER
+================================================================================
+
+  1. Nel pannello Projects, espandi:
+     ristomanager-backend → Source Packages → com.ristomanager
+
+  2. Tasto destro su RistoManagerApplication.java → Run File
+     OPPURE
+     Tasto destro sul progetto → Run
+
+  3. In Output dovresti vedere:
+     "Started RistoManagerApplication"
+     Server attivo su http://localhost:8080
+
+  4. Prova nel browser:
+     http://localhost:8080/api/tavoli
+     → deve mostrare JSON con i 12 tavoli
+
+
+================================================================================
+  PASSO 4 — COLLEGARE IL FRONTEND
+================================================================================
+
+  1. Con il server Java avviato, apri nel browser (doppio click):
+     dashboard/index.html
+
+  2. Se funziona, sparisce l'avviso arancione "modalita demo"
+
+  3. Il frontend chiama http://localhost:8080/api/...
+
+
+================================================================================
+  DOVE SCRIVERE IL CODICE JAVA
+================================================================================
+
+  backend/src/main/java/com/ristomanager/
+  ├── entity/         → classi database (gia create)
+  ├── repository/     → interfacce JPA (gia create)
+  ├── service/        → LOGICA — qui implementi seguendo le roadmap
+  ├── controller/     → endpoint REST (gia collegati)
+  └── config/           → CORS e dati di prova
+
+  Guide passo passo:
+  - docs/ROADMAP-DASHBOARD.txt
+  - docs/ROADMAP-TAVOLI.txt
+  - docs/ROADMAP-ORDINI.txt
+  - docs/ROADMAP-PRENOTAZIONI.txt
+  - docs/ROADMAP-MENU.txt
+
+
+================================================================================
+  COSA E GIA FATTO NEL BACKEND
+================================================================================
+
+  [OK] Progetto Maven Spring Boot
+  [OK] 5 tabelle (Entity)
+  [OK] Repository
+  [OK] 12 tavoli + 7 piatti inseriti all'avvio
+  [OK] GET /api/tavoli funzionante
+  [OK] GET /api/piatti funzionante
+  [OK] GET /api/dashboard (base)
+  [OK] CORS abilitato per il frontend
+
+  [DA FARE] Logica ordini, prenotazioni, menu completo
+            → segui i file ROADMAP-*.txt in docs/
+
+
+================================================================================
+  PROBLEMI COMUNI
+================================================================================
+
+  "Non vedo il progetto Maven"
+  → Hai aperto la cartella sbagliata. Apri "backend", non la cartella padre.
+
+  "JDK not found" / errore versione Java
+  → NetBeans → Tools → Java Platforms → aggiungi JDK 17
+
+  "Maven dependencies failed"
+  → Tasto destro progetto → Reload Project with Dependencies
+  → Serve connessione internet la prima volta
+
+  Il frontend resta in modalita demo
+  → Il server Java non e avviato, oppure errore in console Output
+
+  Porta 8080 occupata
+  → Chiudi altre istanze del server o cambia server.port in
+    backend/src/main/resources/application.properties
+
+
+================================================================================
+  ALTERNATIVA: CREARE PROGETTO DA ZERO IN NETBEANS
+================================================================================
+
+  Se preferisci crearlo tu:
+  1. File → New Project → Maven → Java Application
+  2. Poi copia i file da backend/ nel nuovo progetto
+
+  Ma e piu semplice aprire direttamente la cartella backend gia pronta.
+
+
+================================================================================
+  FINE — Apri backend/ in NetBeans e premi Run su RistoManagerApplication
+================================================================================

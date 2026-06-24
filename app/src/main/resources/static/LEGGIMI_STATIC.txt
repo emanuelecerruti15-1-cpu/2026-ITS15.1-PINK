@@ -1,0 +1,1 @@
+Questa è la cartella static di Spring Boot. Apri http://localhost:8080/index.html
