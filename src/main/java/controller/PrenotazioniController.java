@@ -25,11 +25,13 @@ import java.util.List;
 public class PrenotazioniController {
 
     private final PrenotazioneService prenotazioneService;
-    private PrenotazioniRepository prenotazioneRepository;
+    private final PrenotazioniRepository prenotazioneRepository;
 
 
-    public PrenotazioniController(PrenotazioneService ordinazioniService) {
-        this.prenotazioneService = ordinazioniService;
+    public PrenotazioniController(PrenotazioneService prenotazioneService,
+                                  PrenotazioniRepository prenotazioneRepository) {
+        this.prenotazioneService = prenotazioneService;
+        this.prenotazioneRepository = prenotazioneRepository; // INIZIALIZZAZIONE!
     }
 
     @GetMapping("/{id}")
@@ -42,9 +44,12 @@ public class PrenotazioniController {
         Prenotazioni p = new Prenotazioni();
         p.setNomeCliente(dto.nome);
         p.setNumeroPersone(dto.persone);
-        // Combina data e ora per creare il LocalDateTime richiesto dall'Entity
+
+        // Assicurati che dto.data e dto.ora arrivino nel formato corretto
+        // Es: data="2026-06-25", ora="23:00" -> "2026-06-25T23:00"
         p.setDataOra(LocalDateTime.parse(dto.data + "T" + dto.ora));
         p.setIdTavolo(dto.tavoloId != null ? dto.tavoloId : 0);
+
 
         prenotazioneRepository.save(p);
         return ResponseEntity.ok().build();

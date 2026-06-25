@@ -72,23 +72,25 @@ function renderLista(lista) {
     }
 
     el.innerHTML = lista.map(function (p) {
+        // p.dataOra è "2026-06-25T23:00:00"
+        // .split('T')[0] prende la data (2026-06-25)
+        // .split('T')[1] prende l'ora (23:00:00)
+
+        const dataCompleta = p.dataOra ? p.dataOra.split('T')[0] : "";
         const orario = p.dataOra ? p.dataOra.split('T')[1].substring(0, 5) : "--:--";
         const tavolo = p.idTavolo ? "Tavolo " + p.idTavolo : "Da assegnare";
 
         return `
-            <li class="reservations-list__item">
-                <div style="display:flex;justify-content:space-between;align-items:start;gap:8px">
-                    <div>
-                        <span class="reservations-list__name">${p.nomeCliente}</span>
-                        <span class="reservations-list__meta">
-                            ${ora} · ${tavolo} · ${p.numeroPersone} pers.
-                        </span>
-                    </div>
-                    <button type="button" class="link-btn link-btn--muted" data-id="${p.id}">
-                        Cancella
-                    </button>
-                </div>
-            </li>
+        <li class="reservations-list__item">
+            <div>
+                <span class="reservations-list__name">${p.nomeCliente}</span>
+                <span class="reservations-list__meta">
+                    ${orario} · ${tavolo} · ${p.numeroPersone} pers. 
+                    <small>(${dataCompleta})</small>
+                </span>
+            </div>
+            <button type="button" data-id="${p.id}">Cancella</button>
+        </li>
     `;
     }).join("");
 
@@ -102,28 +104,27 @@ function renderLista(lista) {
 async function salvaPrenotazione(e) {
     e.preventDefault();
 
+    const nome = document.getElementById("nome-cliente").value.trim();
     const tavoloValue = document.getElementById("tavolo-prenotazione").value;
-    const oraValue = document.getElementById("ora-prenotazione").value;
+    const oraValue = document.getElementById("ora-prenotazione").value; // es: "23:00"
+
+    const oggi = new Date().toISOString().split("T")[0]; // "2026-06-25"
+    const dataOraString = `${oggi}T${oraValue}:00`;     // "2026-06-25T23:00:00"
 
     const dati = {
-        nome: document.getElementById("nome-cliente").value.trim(),
-        ora: oraValue.length === 5 ? oraValue + ":00" : oraValue,
-        persone: Number(document.getElementById("persone").value),
-        tavoloId: tavoloValue === "" ? null : Number(tavoloValue),
-        data: new Date().toISOString().split("T")[0],
-        totale: 0
+        nomeCliente: nome,
+        dataOra: dataOraString,
+        numeroPersone: Number(document.getElementById("persone").value),
+        idTavolo: tavoloValue === "" ? null : Number(tavoloValue)
     };
-
-    console.log("Dati inviati al backend:", dati);
 
     try {
         await creaPrenotazione(dati);
         await caricaLista();
-
         document.getElementById("form-prenotazione").reset();
     } catch (err) {
-        console.error("Errore salvataggio prenotazione:", err);
-        alert("Errore salvataggio prenotazione: " + err.message);
+        console.error("Errore salvataggio:", err);
+        alert("Errore salvataggio: " + err.message);
     }
 }
 
