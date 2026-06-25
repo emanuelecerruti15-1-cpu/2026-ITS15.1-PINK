@@ -57,7 +57,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['azione']) && $_POST['a
 $tavoliOccupati = [];
 
 // Prendiamo i tavoli che sono occupati (disponibilita = 0) OPPURE fuori servizio (stato diverso da 'attivo')
-$sqlTavoli = "SELECT tavolo FROM tavoli WHERE disponibilita = 0 OR stato != 'attivo'"; 
+$sqlTavoli = "SELECT tavolo FROM tavoli WHERE disponibilita = 0 OR stato != 'libero'"; 
 $resTavoli = $conn->query($sqlTavoli);
 
 if ($resTavoli && $resTavoli->num_rows > 0) {
