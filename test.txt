@@ -99,6 +99,42 @@ DESCRIZIONE: Verificare che modificando manualmente i valori della richiesta (es
 STATO: [SUPERATO]
 NOTE/ERRORI: 
 
+
+------------------------------------------------------------------------
+4. DEBUG JAVAL & INTEGRITÀ DATI (DATABASE CONNESSO)
+------------------------------------------------------------------------
+
+
+ID TEST: TC-JAVA-001
+COMPONENTE: Iniezione Dipendenze (DashboardService)
+DESCRIZIONE: Verificare che il DashboardService si avvii correttamente senza sollevare NullPointerException. Testare che rigaOrdineRepository e le altre dipendenze siano correttamente iniettate tramite costruttore.
+STATO: [SUPERATO]
+NOTE/ERRORI:
+
+ID TEST: TC-JAVA-002
+COMPONENTE: Serializzazione DTO vs Entity
+DESCRIZIONE: Inviare una richiesta POST per una nuova prenotazione. Verificare che l'oggetto JSON ricevuto dal frontend (PrenotazioneDTO) venga correttamente mappato nell'Entity Prenotazioni senza perdere campi (nome, data, tavolo).
+STATO: [NON SUPERATO]
+NOTE/ERRORI:
+
+ID TEST: TC-JAVA-003
+COMPONENTE: Risoluzione Formato LocalDateTime
+DESCRIZIONE: Verificare che il parser di LocalDateTime gestisca correttamente le stringhe ISO inviate dal frontend (es: 2026-06-25T23:00:00). Assicurarsi che non avvengano errori di formattazione durante il salvataggio.
+STATO: [SUPERATO]
+NOTE/ERRORI:
+
+ID TEST: TC-JAVA-004
+COMPONENTE: Integrità Relazione Ordini-Righe
+DESCRIZIONE: Testare che, dopo la creazione di un ordine, il salvataggio delle RigaOrdine avvenga con il corretto ordineId. Verificare che il recupero tramite findByOrdineId restituisca la lista corretta e non null o vuota.
+STATO: [SUPERATO]
+NOTE/ERRORI:
+
+ID TEST: TC-JAVA-005
+COMPONENTE: Stato Ordini (Logica di Business)
+DESCRIZIONE: Verificare che i metodi inviaInCucina, segnaPronto e pagaOrdine cambino effettivamente lo stato dell'ordine nel database. Controllare che gli ordini "PAGATI" non compaiano nella lista degli "ordini attivi".
+STATO: [DA TESTARE]
+NOTE/ERRORI:
+
 ========================================================================
                        FINE REGISTRO DEI TEST
 ======================================================================== 
