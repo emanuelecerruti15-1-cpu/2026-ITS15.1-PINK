@@ -72,15 +72,16 @@ function renderLista(lista) {
     }
 
     el.innerHTML = lista.map(function (p) {
-        const tavolo = p.tavoloId ? "Tavolo " + p.tavoloId : "Da assegnare";
+        const orario = p.dataOra ? p.dataOra.split('T')[1].substring(0, 5) : "--:--";
+        const tavolo = p.idTavolo ? "Tavolo " + p.idTavolo : "Da assegnare";
 
         return `
             <li class="reservations-list__item">
                 <div style="display:flex;justify-content:space-between;align-items:start;gap:8px">
                     <div>
-                        <span class="reservations-list__name">${nome}</span>
+                        <span class="reservations-list__name">${p.nomeCliente}</span>
                         <span class="reservations-list__meta">
-                            ${ora} · ${tavolo} · ${persone} pers.
+                            ${ora} · ${tavolo} · ${p.numeroPersone} pers.
                         </span>
                     </div>
                     <button type="button" class="link-btn link-btn--muted" data-id="${p.id}">
@@ -88,7 +89,7 @@ function renderLista(lista) {
                     </button>
                 </div>
             </li>
-        `;
+    `;
     }).join("");
 
     el.querySelectorAll("button[data-id]").forEach(function (btn) {

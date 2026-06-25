@@ -11,10 +11,6 @@ const TAVOLI_DEMO = [
     { id: 6, numero: 6, posti: 2, forma: 'CERCHIO', stato: 'LIBERO', nonDisponibile: false, creatoIl: '2024-01-10', modificatoIl: '2026-06-12' },
     { id: 7, numero: 7, posti: 2, forma: 'CERCHIO', stato: 'LIBERO', nonDisponibile: false, creatoIl: '2024-01-10', modificatoIl: '2026-06-12' },
     { id: 8, numero: 8, posti: 6, forma: 'RETTANGOLARE', stato: 'NON_DISPONIBILE', nonDisponibile: true, creatoIl: '2024-01-10', modificatoIl: '2026-06-10' },
-    { id: 9, numero: 9, posti: 4, forma: 'RETTANGOLARE_V', stato: 'OCCUPATO', nonDisponibile: false, creatoIl: '2024-01-10', modificatoIl: '2026-06-18', ordine: { id: 3, stato: 'IN_CUCINA', totale: 18.5, righe: [{ nome: 'Insalata', quantita: 2, prezzo: 9.25 }] } },
-    { id: 10, numero: 10, posti: 2, forma: 'CERCHIO', stato: 'LIBERO', nonDisponibile: false, creatoIl: '2024-01-10', modificatoIl: '2026-06-11' },
-    { id: 11, numero: 11, posti: 2, forma: 'CERCHIO', stato: 'LIBERO', nonDisponibile: false, creatoIl: '2024-01-10', modificatoIl: '2026-06-11' },
-    { id: 12, numero: 12, posti: 4, forma: 'QUADRATO', stato: 'LIBERO', nonDisponibile: false, creatoIl: '2024-01-10', modificatoIl: '2026-06-13' }
 ];
 
 let tavoli = [];

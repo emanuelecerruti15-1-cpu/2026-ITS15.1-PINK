@@ -15,13 +15,13 @@ function euro(valore) {
 
 function statoOrdineLabel(stato) {
     const map = {
-        APERTO: "Aperto",
-        IN_CUCINA: "In cucina",
-        PRONTO: "Pronto",
-        PAGATO: "Pagato",
-        ANNULLATO: "Annullato"
+        "Aperto": "Aperto",
+        "In cucina": "In cucina",
+        "Pronto": "Pronto",
+        "Pagato": "Pagato",
+        "Annullato": "Annullato"
     };
-    return map[stato] || stato || "Aperto";
+    return map[stato] || stato;
 }
 
 function statoTavoloLabel(stato) {

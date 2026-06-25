@@ -523,23 +523,22 @@ function renderLista() {
         el.innerHTML = '<p class="ordini-list__empty">Nessun ordine trovato</p>';
     } else {
         el.innerHTML = pagina.map(function (o) {
-            const attivo = ordineSel && ordineSel.id === o.id ? ' ordine-card--active' : '';
-            const numPiatti = o.righe ? o.righe.reduce(function (s, r) { return s + r.quantita; }, 0) : 0;
-            return '<button type="button" class="ordine-card' + attivo + '" data-id="' + o.id + '" role="listitem">' +
-                '<span class="ordine-card__tavolo ' + classeCerchioOrdine(o.stato) + '">' +
-                    o.tavoloNumero + '<small>' + (o.coperti || '—') + '</small></span>' +
-                '<div class="ordine-card__main">' +
-                    '<p class="ordine-card__title">Tavolo ' + o.tavoloNumero + '</p>' +
-                    '<p class="ordine-card__sub">Ordine #' + o.id + ' · ' + numPiatti + ' piatti</p>' +
-                '</div>' +
-                '<div class="ordine-card__time">' +
-                    '<span class="ordine-card__elapsed">' + (o.minutiTrascorsi || '—') + ' min</span>' +
-                    '<span class="ordine-card__opened">' + (o.apertoAlle || '—') + '</span>' +
-                '</div>' +
-                '<span class="ordine-card__price">' + formattaEuro(o.totale) + '</span>' +
-                '<span class="status-badge ' + classeBadgeOrdine(o.stato) + '">' + testoStatoOrdine(o.stato) + '</span>' +
-                '<span class="ordine-card__chevron" aria-hidden="true">›</span>' +
-            '</button>';
+            const tNum = o.tavoloNumero || o.tavoloId || "?";
+
+            const numPiatti = (o.righe && Array.isArray(o.righe))
+                ? o.righe.reduce((s, r) => s + r.quantita, 0)
+                : 0;
+
+            const statoTesto = o.stato ? testoStatoOrdine(o.stato) : "Sconosciuto";
+
+            return `
+                <button type="button" class="ordine-card" data-id="${o.id}">
+                    <div class="ordine-card__main">
+                        <p class="ordine-card__title">Tavolo ${tNum}</p>
+                        <p class="ordine-card__sub">Ordine #${o.id} · ${numPiatti} piatti</p>
+                    </div>
+                    <span class="status-badge">${statoTesto}</span>
+                </button>`;
         }).join('');
 
         el.querySelectorAll('.ordine-card').forEach(function (card) {

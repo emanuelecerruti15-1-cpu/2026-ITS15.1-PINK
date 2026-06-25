@@ -21,13 +21,13 @@ public class RigaOrdine {
     @Column(name = "piatto_id")
     private Long piattoId;
 
-    @Column(name = "nome")
+    @Column(name = "nome_piatto")
     private String nome;
 
     @Column(name = "quantita")
     private int quantita;
 
-    @Column(name = "prezzo_unitario")
+    @Column(name = "prezzo")
     private double prezzoUnitario;
 
     // FONDAMENTALE: Costruttore vuoto obbligatorio per JPA

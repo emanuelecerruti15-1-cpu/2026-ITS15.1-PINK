@@ -17,11 +17,14 @@ public class OrdineService {
 
     private final OrdineRepository ordineRepository;
     private final PiattoRepository piattoRepository;
-    private RigaOrdineRepository rigaOrdineRepository;
+    private final RigaOrdineRepository rigaOrdineRepository;
 
-    public OrdineService(OrdineRepository ordineRepository, PiattoRepository piattoRepository) {
+    public OrdineService(OrdineRepository ordineRepository,
+                         PiattoRepository piattoRepository,
+                         RigaOrdineRepository rigaOrdineRepository) {
         this.ordineRepository = ordineRepository;
         this.piattoRepository = piattoRepository;
+        this.rigaOrdineRepository = rigaOrdineRepository;
     }
 
     public List<Ordine> getTuttiOrdini() {

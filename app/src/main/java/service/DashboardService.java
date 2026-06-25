@@ -22,15 +22,17 @@ public class DashboardService {
 
     private final TavoloService tavoloService;
     private final OrdineService ordineService;
-    private RigaOrdineRepository rigaOrdineRepository;
+    private final RigaOrdineRepository rigaOrdineRepository;
     private final PrenotazioneService prenotazioneService;
 
     public DashboardService(TavoloService tavoloService,
                             OrdineService ordineService,
-                            PrenotazioneService prenotazioneService) {
+                            PrenotazioneService prenotazioneService,
+                            RigaOrdineRepository rigaOrdineRepository) {
         this.tavoloService = tavoloService;
         this.ordineService = ordineService;
         this.prenotazioneService = prenotazioneService;
+        this.rigaOrdineRepository = rigaOrdineRepository;
     }
 
     public DashboardResponse getDashboard() {
